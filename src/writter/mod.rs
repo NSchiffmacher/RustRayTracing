@@ -1,7 +1,8 @@
-pub mod bmp_writter;
+pub mod ppm_writter;
 
-pub use bmp_writter::BmpWritter;
+pub use ppm_writter::PpmWritter;
 
+use crate::color::Color;
 use std::fs::File;
 
 pub trait Writter {
@@ -10,14 +11,14 @@ pub trait Writter {
     fn filepath(&self) -> &String;
     fn size(&self) -> (usize, usize);
 
-    fn set_at(&mut self, position: (usize, usize), color: (f64, f64, f64));
-    fn set_all(&mut self, color: (f64, f64, f64));
-    fn get_at(&self, position: (usize, usize)) -> (f64, f64, f64);
+    fn set_at(&mut self, position: (usize, usize), color: Color);
+    fn set_all(&mut self, color: Color);
+    fn get_at(&self, position: (usize, usize)) -> Color;
 
     fn save(&self) -> Result<(), std::io::Error>;
 
     fn try_open(&self) -> Result<(), std::io::Error> {
-        File::open(self.filepath())?;
+        File::create(self.filepath())?;
         Ok(())
     }
 }

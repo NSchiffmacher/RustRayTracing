@@ -1,14 +1,15 @@
 
-
+use color::Color;
 use writter::Writter;
 
-pub mod writter;
+pub mod color;
 pub mod vector;
+pub mod writter;
 
 fn main() -> Result<(), std::io::Error> {
     let width = 256;
     let height = 256;
-    let mut writter: Box<dyn Writter> = Box::new(writter::BmpWritter::new("outzput/test.bpm".to_string(), (width, height)));
+    let mut writter: Box<dyn Writter> = Box::new(writter::PpmWritter::new("output/test.bpm".to_string(), (width, height)));
     writter.try_open()?;
     
     for y in 0..height {
@@ -17,7 +18,7 @@ fn main() -> Result<(), std::io::Error> {
             let g: f64 = x as f64 / (width as f64 - 1.);
             let b: f64 = 0.;
 
-            writter.set_at((x, y), (r, g, b));
+            writter.set_at((x, y), Color::new(r, g, b));
         }
     }
 

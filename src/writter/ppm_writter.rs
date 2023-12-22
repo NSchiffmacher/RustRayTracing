@@ -1,22 +1,23 @@
 use crate::writter::Writter;
+use crate::color::Color;
 
 use std::fs::File;
 use std::io::prelude::*;
 
-pub struct BmpWritter {
+pub struct PpmWritter {
     filepath: String,
     width: usize,
     height: usize,
-    data: Vec<Vec<(f64, f64, f64)>>,
+    data: Vec<Vec<Color>>,
 }
 
-impl Writter for BmpWritter {
+impl Writter for PpmWritter {
     fn new(filepath: String, (width, height): (usize, usize)) -> Self where Self: Sized {
         Self {
             filepath,
             width,
             height,
-            data: vec![vec![(0., 0., 0.); width]; height],
+            data: vec![vec![Color::black(); width]; height],
         }
     }
 
@@ -28,20 +29,20 @@ impl Writter for BmpWritter {
         (self.width, self.height)
     }
 
-    fn set_all(&mut self, color: (f64, f64, f64)) {
+    fn set_all(&mut self, color: Color) {
         for y in 0..self.height {
             for x in 0..self.width {
-                self.data[y][x] = color;
+                self.data[y][x] = color.clone();
             }
         }
     }
 
-    fn set_at(&mut self, position: (usize, usize), color: (f64, f64, f64)) {
+    fn set_at(&mut self, position: (usize, usize), color: Color) {
         self.data[position.1][position.0] = color;
     }
 
-    fn get_at(&self, position: (usize, usize)) -> (f64, f64, f64) {
-        self.data[position.1][position.0]
+    fn get_at(&self, position: (usize, usize)) -> Color {
+        self.data[position.1][position.0].clone()
     }
 
     fn save(&self) -> Result<(), std::io::Error> {
@@ -50,13 +51,7 @@ impl Writter for BmpWritter {
         write!(file, "P3\n{} {}\n255\n", self.width, self.height)?;
         for y in 0..self.height {
             for x in 0..self.width {
-                let (r, g, b) = self.data[y][x];
-
-                let ir = (r * 255.).floor() as u8;
-                let ig = (g * 255.).floor() as u8;
-                let ib = (b * 255.).floor() as u8;
-
-                write!(file, "{} {} {}\n", ir, ig, ib)?;
+                write!(file, "{}\n", self.data[y][x].to_bmp_string())?;
             }
         }
 
@@ -71,7 +66,7 @@ mod tests {
 
     #[test]
     fn test_new() {
-        let writter = BmpWritter::new("test.bmp".to_string(), (2, 3));
+        let writter = PpmWritter::new("test.bmp".to_string(), (2, 3));
         assert_eq!(writter.filepath, "test.bmp");
         assert_eq!(writter.width, 2);
         assert_eq!(writter.height, 3);
@@ -81,17 +76,21 @@ mod tests {
 
     #[test]
     fn test_set() {
-        let mut writter = BmpWritter::new("test.bmp".to_string(), (2, 3));
-        writter.set_all((1., 0.5, 0.22));
+        let mut writter = PpmWritter::new("test.bmp".to_string(), (2, 3));
+        writter.set_all(Color::new(1., 0.5, 0.22));
 
         for x in 0..2 {
             for y in 0..3 {
-                assert_eq!(writter.data[y][x], (1., 0.5, 0.22));
+                assert_eq!(writter.data[y][x].r, 1.);
+                assert_eq!(writter.data[y][x].g, 0.5);
+                assert_eq!(writter.data[y][x].b, 0.22);
             }
         }
 
-        writter.set_at((0, 0), (0., 0., 0.));
-        assert_eq!(writter.data[0][0], (0., 0., 0.));
+        writter.set_at((0, 0), Color::black());
+        assert_eq!(writter.data[0][0].r, 0.);
+        assert_eq!(writter.data[0][0].g, 0.);
+        assert_eq!(writter.data[0][0].b, 0.);
     }
 
     #[test]
@@ -99,8 +98,8 @@ mod tests {
         let tmp_dir = TempDir::new("example").unwrap();
         let file_path = tmp_dir.path().join("test.bmp").as_os_str().to_str().unwrap().to_string();
 
-        let mut writter = BmpWritter::new(file_path, (1, 2));
-        writter.set_all((1., 0.5, 0.22));
+        let mut writter = PpmWritter::new(file_path, (1, 2));
+        writter.set_all(Color::new(1., 0.5, 0.22));
         writter.save().unwrap();
 
         let mut file = File::open(tmp_dir.path().join("test.bmp")).unwrap();
