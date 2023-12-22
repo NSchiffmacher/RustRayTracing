@@ -21,7 +21,7 @@ impl Vec3 {
     }
 
     pub fn length_squared(&self) -> f64 {
-        self.x * self.x + self.y * self.y + self.z * self.z
+        self.dot(self)
     }
 
     pub fn length(&self) -> f64 {
@@ -31,6 +31,18 @@ impl Vec3 {
     pub fn normalize(&mut self) -> Self {
         let length = self.length();
         *self / length
+    }
+
+    pub fn dot(&self, rhs: &Self) -> f64 {
+        self.x * rhs.x + self.y * rhs.y + self.z * rhs.z
+    }
+
+    pub fn cross(&self, rhs: &Self) -> Self {
+        Self::new(
+            self.y * rhs.z - self.z * rhs.y,
+            self.z * rhs.x - self.x * rhs.z,
+            self.x * rhs.y - self.y * rhs.x,
+        )
     }
 }
 
@@ -176,5 +188,32 @@ mod tests {
         assert_eq!(vec1.x, 2.0);
         assert_eq!(vec1.y, 4.0);
         assert_eq!(vec1.z, 6.0);
+    }
+
+    #[test]
+    fn test_neg() {
+        let vec = Vec3::new(1.0, 2.0, 3.0);
+        let result = -vec;
+        assert_eq!(result.x, -1.0);
+        assert_eq!(result.y, -2.0);
+        assert_eq!(result.z, -3.0);
+    }
+
+    #[test]
+    fn test_dot() {
+        let vec1 = Vec3::new(1.0, 2.0, 3.0);
+        let vec2 = Vec3::new(4.0, 5.0, 6.0);
+        let result = vec1.dot(&vec2);
+        assert_eq!(result, 32.0);
+    }
+
+    #[test]
+    fn test_cross() {
+        let vec1 = Vec3::new(1.0, 0.0, 0.0);
+        let vec2 = Vec3::new(0.0, 1.0, 0.0);
+        let result = vec1.cross(&vec2);
+        assert_eq!(result.x, 0.0);
+        assert_eq!(result.y, 0.0);
+        assert_eq!(result.z, 1.0);
     }
 }
