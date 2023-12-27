@@ -31,7 +31,7 @@ impl Color {
         Self::new(0., 0., 1.)
     }
 
-    pub fn to_bmp_string(&self) -> String {
+    pub fn to_ppm_string(&self) -> String {
         let ir = (self.r * 255.).floor() as u8;
         let ig = (self.g * 255.).floor() as u8;
         let ib = (self.b * 255.).floor() as u8;

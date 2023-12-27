@@ -51,7 +51,7 @@ impl Writter for PpmWritter {
         write!(file, "P3\n{} {}\n255\n", self.width, self.height)?;
         for y in 0..self.height {
             for x in 0..self.width {
-                write!(file, "{}\n", self.data[y][x].to_bmp_string())?;
+                write!(file, "{}\n", self.data[y][x].to_ppm_string())?;
             }
         }
 
