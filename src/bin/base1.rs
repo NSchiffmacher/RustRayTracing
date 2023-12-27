@@ -1,4 +1,3 @@
-
 use raytracing::color::Color;
 use raytracing::writter::{Writter, PpmWritter};
 

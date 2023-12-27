@@ -1,5 +1,4 @@
 pub mod ppm_writter;
-
 pub use ppm_writter::PpmWritter;
 
 use crate::color::Color;
