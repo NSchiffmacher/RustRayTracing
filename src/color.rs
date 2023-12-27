@@ -1,3 +1,4 @@
+use crate::vector::Vec3;
 
 #[derive(Clone)]
 pub struct Color {
@@ -9,6 +10,14 @@ pub struct Color {
 impl Color {
     pub fn new(r: f64, g: f64, b: f64) -> Self {
         Self { r, g, b, }
+    }
+
+    pub fn from_vec(v: &Vec3) -> Self {
+        assert!(v.x() >= 0. && v.x() <= 1.);
+        assert!(v.y() >= 0. && v.y() <= 1.);
+        assert!(v.z() >= 0. && v.z() <= 1.);
+        
+        Self::new(v.x(), v.y(), v.z())
     }
 
     pub fn to_ppm_string(&self) -> String {

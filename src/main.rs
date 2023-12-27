@@ -5,8 +5,13 @@ use raytracing::ray::Ray;
 use raytracing::vector::{Point, Vec3};
 
 fn ray_color(ray: &Ray) -> Color {
-    if hit_sphere(&Point::new(0., 0., -1.), 0.5, ray) {
-        return Color::red();
+    let sphere_center = Point::new(0., 0., -1.);
+    let sphere_radius = 0.5;
+    if let Some(t) = hit_sphere(&sphere_center, sphere_radius, ray) {
+        let hit_point = ray.at(t);
+        let normal = (hit_point - sphere_center).normalized();
+        let v = (normal + Vec3::new(1., 1., 1.)) * 0.5;
+        return Color::from_vec(&v);
     }
 
     let unit_direction = ray.direction().normalized();
@@ -15,14 +20,18 @@ fn ray_color(ray: &Ray) -> Color {
     Color::white().lerp(&Color::new(0.5, 0.7, 1.0), a)
 }
 
-fn hit_sphere(center: &Point, radius: f64, ray: &Ray) -> bool {
+fn hit_sphere(center: &Point, radius: f64, ray: &Ray) -> Option<f64> {
     let oc = ray.origin() - *center;
     let a = ray.direction().dot(&ray.direction());
-    let b = ray.direction().dot(&oc) * 2.;
+    let b_half = ray.direction().dot(&oc);
     let c = oc.dot(&oc) - radius * radius;
 
-    let delta = b * b - 4. * a * c;
-    delta >= 0.
+    let delta_quarter = b_half * b_half -  a * c;
+    if delta_quarter < 0. {
+        return None;
+    } 
+    
+    Some((-b_half - delta_quarter.sqrt()) / a)
 }
 
 fn main() -> Result<(), std::io::Error> {
