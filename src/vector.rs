@@ -2,9 +2,9 @@ use std::ops;
 
 #[derive(Copy, Clone, PartialEq, Debug)]
 pub struct Vec3 {
-    pub x: f64,
-    pub y: f64,
-    pub z: f64,
+    x: f64,
+    y: f64,
+    z: f64,
 }
 
 pub type Point = Vec3;
@@ -16,6 +16,18 @@ impl Vec3 {
             y,
             z,
         }
+    }
+
+    pub fn x(&self) -> f64 {
+        self.x
+    }
+
+    pub fn y(&self) -> f64 {
+        self.y
+    }
+
+    pub fn z(&self) -> f64 {
+        self.z
     }
 
     pub fn zero() -> Self {
@@ -30,7 +42,7 @@ impl Vec3 {
         self.length_squared().sqrt()
     }
 
-    pub fn normalize(&mut self) -> Self {
+    pub fn normalized(&self) -> Self {
         let length = self.length();
         *self / length
     }

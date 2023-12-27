@@ -4,7 +4,7 @@ use raytracing::writter::{Writter, PpmWritter};
 fn main() -> Result<(), std::io::Error> {
     let width = 256;
     let height = 256;
-    let mut writter: Box<dyn Writter> = Box::new(PpmWritter::new("output/test.bpm".to_string(), (width, height)));
+    let mut writter: Box<dyn Writter> = Box::new(PpmWritter::new("output/base1.bpm".to_string(), (width, height)));
     writter.try_open()?;
 
     print!("Starting rendering...");
