@@ -16,12 +16,12 @@ impl Ray {
         }
     }
 
-    pub fn origin(&self) -> Point {
-        self.origin.clone()
+    pub fn origin(&self) -> &Point {
+        &self.origin
     }
 
-    pub fn direction(&self) -> Point {
-        self.direction.clone()
+    pub fn direction(&self) -> &Point {
+        &self.direction
     }
 
     pub fn at(&self, t: f64) -> Point {
@@ -39,8 +39,8 @@ mod tests {
         let direction = Vec3::new(4., 5., 6.);
         let ray = Ray::new(origin.clone(), direction.clone());
 
-        assert_eq!(ray.origin(), origin);
-        assert_eq!(ray.direction(), direction);
+        assert_eq!(*ray.origin(), origin);
+        assert_eq!(*ray.direction(), direction);
     }
 
     #[test]
