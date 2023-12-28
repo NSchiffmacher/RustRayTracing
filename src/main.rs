@@ -11,12 +11,13 @@ fn main() -> Result<(), std::io::Error> {
     let width = 800;
     let aspect_ratio = 16.0 / 9.0;
     let samples_per_pixel = 10;
+    let max_depth = 10;
     let viewport_height = 2.0;
     let camera_center = Point::new(0., 0., 0.);
     let focal_length = 1.;
     
     // Image settings
-    let image_info = ImageInfo::from_aspect_ratio(aspect_ratio, width, "output/test.ppm".to_string(), samples_per_pixel);
+    let image_info = ImageInfo::from_aspect_ratio(aspect_ratio, width, "output/test.ppm".to_string(), samples_per_pixel, max_depth);
 
     // Output settings
     let mut writter: Box<dyn Writter> = Box::new(PpmWritter::new(image_info.clone()));

@@ -10,7 +10,7 @@ use raytracing::image_info::ImageInfo;
 fn ray_color(ray: &Ray, world: &HittableList) -> Color {
     if let Some(hit_record) = world.hit(ray, &Interval::positive()) {
         let v = (hit_record.normal + Vec3::new(1., 1., 1.)) * 0.5;
-        return Color::from_vec(&v);
+        return Color::from_vec(v);
     }
 
     let unit_direction = ray.direction().normalized();
@@ -29,7 +29,7 @@ fn main() -> Result<(), std::io::Error> {
     let height = ((width as f64) / aspect_ratio) as usize;
 
     // Output settings
-    let image_info = ImageInfo::new(width, height, "output/base2.ppm".to_string(), 1);
+    let image_info = ImageInfo::new(width, height, "output/base2.ppm".to_string(), 1, 1);
     let mut writter: Box<dyn Writter> = Box::new(PpmWritter::new(image_info.clone()));
     writter.try_open()?;
 

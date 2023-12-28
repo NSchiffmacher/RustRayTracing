@@ -59,7 +59,7 @@ mod tests {
 
     #[test]
     fn test_set() {
-        let mut options = ImageInfo::from_aspect_ratio(0., 0, "test.ppm".to_string(), 10);
+        let mut options = ImageInfo::from_aspect_ratio(0., 0, "test.ppm".to_string(), 10, 10);
         options.width = 2;
         options.height = 3;
         let mut writter = PpmWritter::new(options);
@@ -84,7 +84,7 @@ mod tests {
         let tmp_dir = TempDir::new("example").unwrap();
         let file_path = tmp_dir.path().join("test.bmp").as_os_str().to_str().unwrap().to_string();
 
-        let mut options = ImageInfo::from_aspect_ratio(0., 0, file_path, 10);
+        let mut options = ImageInfo::from_aspect_ratio(0., 0, file_path, 10, 10);
         options.width = 1;
         options.height = 2;
         let mut writter = PpmWritter::new(options);

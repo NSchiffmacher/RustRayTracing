@@ -18,7 +18,6 @@ pub struct Camera {
     // viewport_height: f64,
     // viewport_width: f64,
 
-
     viewport_u: Vec3,
     viewport_v: Vec3,
 
@@ -83,7 +82,7 @@ impl Camera {
                     let ray = self.get_ray(x, y);
                     color_vec += self.ray_color(&ray, &world).to_vec();
                 }
-                writter.set_at((x, y), Color::from_vec(&(color_vec / (self.image_info.samples_per_pixel as f64))));
+                writter.set_at((x, y), Color::from_vec(color_vec / (self.image_info.samples_per_pixel as f64)));
             }
         }
 
@@ -105,16 +104,25 @@ impl Camera {
 
         self.pixel_delta_u * px + self.pixel_delta_v * py
     }
-    
-    fn ray_color(&self, ray: &Ray, world: &HittableList) -> Color {
+
+    fn ray_color_rec(&mut self, ray: &Ray, world: &HittableList, depth: usize) -> Vec3 {
+        if depth <= 0 {
+            return Vec3::zero();
+        }
+
         if let Some(hit_record) = world.hit(ray, &Interval::positive()) {
-            let v = (hit_record.normal + Vec3::new(1., 1., 1.)) * 0.5;
-            return Color::from_vec(&v);
+            // let v = (hit_record.normal + Vec3::new(1., 1., 1.)) * 0.5;
+            let random = Vec3::random_vector_in_hemisphere(&hit_record.normal, &mut self.rng);
+            return self.ray_color_rec(&Ray::new(hit_record.point, random), world, depth - 1) * 0.5;
         }
     
         let unit_direction = ray.direction().normalized();
         let a = 0.5 * (unit_direction.y() + 1.0);
+        
+        Vec3::new(1., 1., 1.) * (1. - a) + Vec3::new(0.5, 0.7, 1.0) * a
+    }
     
-        Color::white().lerp(&Color::new(0.5, 0.7, 1.0), a)
+    fn ray_color(&mut self, ray: &Ray, world: &HittableList) -> Color {
+        Color::from_vec(self.ray_color_rec(ray, world, self.image_info.max_depth))
     }
 }

@@ -19,7 +19,7 @@ impl Color {
         }
     }
 
-    pub fn from_vec(v: &Vec3) -> Self {        
+    pub fn from_vec(v: Vec3) -> Self {        
         Self::new(v.x(), v.y(), v.z())
     }
 

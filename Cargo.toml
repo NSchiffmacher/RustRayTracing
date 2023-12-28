@@ -8,4 +8,5 @@ default-run = "raytracing"
 
 [dependencies]
 rand = "0.8.5"
+remove_dir_all = "0.8.2"
 tempdir = "0.3.7"

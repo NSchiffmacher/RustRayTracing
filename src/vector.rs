@@ -1,4 +1,5 @@
 use std::ops;
+use rand::Rng;
 
 #[derive(Copy, Clone, PartialEq, Debug)]
 pub struct Vec3 {
@@ -57,6 +58,31 @@ impl Vec3 {
             self.z * rhs.x - self.x * rhs.z,
             self.x * rhs.y - self.y * rhs.x,
         )
+    }
+
+    pub fn random_in_sphere(rng: &mut rand::rngs::ThreadRng) -> Self {
+        loop {
+            let vec = Self::new(
+                rng.gen_range(-1.0..1.0),
+                rng.gen_range(-1.0..1.0),
+                rng.gen_range(-1.0..1.0),
+            );
+            if vec.length_squared() < 1. {
+                return vec;
+            }
+        }
+    }
+
+    pub fn random_in_unit_sphere(rng: &mut rand::rngs::ThreadRng) -> Self {
+        Self::random_in_sphere(rng).normalized()
+    }
+
+    pub fn random_vector_in_hemisphere(normal: &Vec3, rng: &mut rand::rngs::ThreadRng) -> Vec3 {
+        let mut random_vec = Vec3::random_in_unit_sphere(rng);
+        if random_vec.dot(normal) < 0.0 {
+            random_vec = -random_vec;
+        }
+        random_vec
     }
 }
 

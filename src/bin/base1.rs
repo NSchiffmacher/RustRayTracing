@@ -6,7 +6,7 @@ fn main() -> Result<(), std::io::Error> {
     let width = 256;
     let height = 256;
 
-    let image_info = ImageInfo::new(width, height, "output/base1.ppm".to_string(), 1);
+    let image_info = ImageInfo::new(width, height, "output/base1.ppm".to_string(), 1, 1);
     let mut writter: Box<dyn Writter> = Box::new(PpmWritter::new(image_info.clone()));
     writter.try_open()?;
 
