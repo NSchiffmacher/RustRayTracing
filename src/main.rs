@@ -3,19 +3,23 @@ use raytracing::camera::Camera;
 use raytracing::writter::{Writter, PpmWritter};
 use raytracing::vector::Point;
 use raytracing::hittable::{HittableList, Sphere};
+use raytracing::image_info::ImageInfo;
 
 
 fn main() -> Result<(), std::io::Error> {
     // Constants
-    let aspect_ratio = 16.0 / 9.0;
     let width = 800;
+    let aspect_ratio = 16.0 / 9.0;
+    let samples_per_pixel = 10;
     let viewport_height = 2.0;
-
+    let camera_center = Point::new(0., 0., 0.);
+    let focal_length = 1.;
+    
     // Image settings
-    let height = ((width as f64) / aspect_ratio) as usize;
+    let image_info = ImageInfo::from_aspect_ratio(aspect_ratio, width, "output/test.ppm".to_string(), samples_per_pixel);
 
     // Output settings
-    let mut writter: Box<dyn Writter> = Box::new(PpmWritter::new("output/test.ppm".to_string(), (width, height)));
+    let mut writter: Box<dyn Writter> = Box::new(PpmWritter::new(image_info.clone()));
     writter.try_open()?;
 
     // Objects
@@ -24,10 +28,8 @@ fn main() -> Result<(), std::io::Error> {
     world.add(Sphere::boxed(Point::new(0., -100.5, -1.), 100.));
 
     // Camera 
-    let camera_center = Point::new(0., 0., 0.);
-    let focal_length = 1.;
-    let samples_per_pixel = 10;
-    let mut camera = Camera::new(focal_length, camera_center, samples_per_pixel, aspect_ratio, width, viewport_height);
+    let mut camera = Camera::new(viewport_height, image_info.clone());
+    camera.set(camera_center, focal_length);
 
     // Rendering
     camera.render(&world, &mut *writter);

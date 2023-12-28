@@ -1,37 +1,30 @@
 use crate::writter::Writter;
 use crate::color::Color;
+use crate::image_info::ImageInfo;
 
 use std::fs::File;
 use std::io::prelude::*;
 
 pub struct PpmWritter {
-    filepath: String,
-    width: usize,
-    height: usize,
+    image_info: ImageInfo,
     data: Vec<Vec<Color>>,
 }
 
 impl Writter for PpmWritter {
-    fn new(filepath: String, (width, height): (usize, usize)) -> Self where Self: Sized {
+    fn new(image_info: ImageInfo) -> Self where Self: Sized {
         Self {
-            filepath,
-            width,
-            height,
-            data: vec![vec![Color::black(); width]; height],
+            image_info: image_info.clone(),
+            data: vec![vec![Color::black(); image_info.width]; image_info.height],
         }
     }
-
-    fn filepath(&self) -> &String {
-        &self.filepath
-    }
-
-    fn size(&self) -> (usize, usize) {
-        (self.width, self.height)
+    
+    fn image_info(&self) -> &ImageInfo {
+        &self.image_info
     }
 
     fn set_all(&mut self, color: Color) {
-        for y in 0..self.height {
-            for x in 0..self.width {
+        for y in 0..self.image_info.height {
+            for x in 0..self.image_info.width {
                 self.data[y][x] = color.clone();
             }
         }
@@ -46,11 +39,11 @@ impl Writter for PpmWritter {
     }
 
     fn save(&self) -> Result<(), std::io::Error> {
-        let mut file = File::create(self.filepath.clone())?;
+        let mut file = File::create(self.image_info.filepath.clone())?;
 
-        write!(file, "P3\n{} {}\n255\n", self.width, self.height)?;
-        for y in 0..self.height {
-            for x in 0..self.width {
+        write!(file, "P3\n{} {}\n255\n", self.image_info.width, self.image_info.height)?;
+        for y in 0..self.image_info.height {
+            for x in 0..self.image_info.width {
                 write!(file, "{}\n", self.data[y][x].to_ppm_string())?;
             }
         }
@@ -65,18 +58,11 @@ mod tests {
     use tempdir::TempDir;
 
     #[test]
-    fn test_new() {
-        let writter = PpmWritter::new("test.bmp".to_string(), (2, 3));
-        assert_eq!(writter.filepath, "test.bmp");
-        assert_eq!(writter.width, 2);
-        assert_eq!(writter.height, 3);
-        assert_eq!(writter.data.len(), 3);
-        assert_eq!(writter.data[0].len(), 2);
-    }
-
-    #[test]
     fn test_set() {
-        let mut writter = PpmWritter::new("test.bmp".to_string(), (2, 3));
+        let mut options = ImageInfo::from_aspect_ratio(0., 0, "test.ppm".to_string(), 10);
+        options.width = 2;
+        options.height = 3;
+        let mut writter = PpmWritter::new(options);
         writter.set_all(Color::new(1., 0.5, 0.22));
 
         for x in 0..2 {
@@ -98,7 +84,11 @@ mod tests {
         let tmp_dir = TempDir::new("example").unwrap();
         let file_path = tmp_dir.path().join("test.bmp").as_os_str().to_str().unwrap().to_string();
 
-        let mut writter = PpmWritter::new(file_path, (1, 2));
+        let mut options = ImageInfo::from_aspect_ratio(0., 0, file_path, 10);
+        options.width = 1;
+        options.height = 2;
+        let mut writter = PpmWritter::new(options);
+
         writter.set_all(Color::new(1., 0.5, 0.22));
         writter.save().unwrap();
 

@@ -4,23 +4,20 @@ use crate::interval::Interval;
 use crate::color::Color;
 use crate::vector::{Vec3, Point};
 use crate::writter::Writter;
+use crate::image_info::ImageInfo;
 
 use rand::Rng;
 
 pub struct Camera {
     focal_length: f64,
-    aspect_ratio: f64,
-    samples_per_pixel: usize,
+    camera_center: Point,
+    image_info: ImageInfo,
 
     rng: rand::rngs::ThreadRng,
     
-    image_height: usize,
-    image_width: usize,
+    // viewport_height: f64,
+    // viewport_width: f64,
 
-    viewport_height: f64,
-    viewport_width: f64,
-
-    camera_center: Point,
 
     viewport_u: Vec3,
     viewport_v: Vec3,
@@ -33,33 +30,24 @@ pub struct Camera {
 }
 
 impl Camera {
-    pub fn new(focal_length: f64, camera_center: Point, samples_per_pixel: usize, aspect_ratio: f64, image_width: usize, viewport_height: f64) -> Self {
-        let image_height = ((image_width as f64) / aspect_ratio) as usize;
-        let viewport_width = viewport_height * (image_width as f64) / (image_height as f64);
+    pub fn new(viewport_height: f64, image_info: ImageInfo) -> Self {
+        let viewport_width = viewport_height * (image_info.width as f64) / (image_info.height as f64);
 
         let viewport_u = Vec3::new(viewport_width, 0.0, 0.0); // Horizontal vector
         let viewport_v = Vec3::new(0.0, -viewport_height, 0.0); // Vertical vector
     
-        let pixel_delta_u = viewport_u / (image_width as f64);
-        let pixel_delta_v = viewport_v / (image_height as f64);
+        let pixel_delta_u = viewport_u / (image_info.width as f64);
+        let pixel_delta_v = viewport_v / (image_info.height as f64);
     
-        let viewport_upper_left = camera_center - Vec3::new(0.0, 0.0, focal_length) - (viewport_u / 2.0) - (viewport_v / 2.0);
-        let pixel00_loc = viewport_upper_left + (pixel_delta_u + pixel_delta_v) * 0.5; // Center of the first pixel
-    
-        Self {
-            focal_length,
-            aspect_ratio,
-            samples_per_pixel,
+        let mut camera = Self {
+            focal_length: 1.,
+            camera_center: Point::zero(),
+            image_info,
 
             rng: rand::thread_rng(),
 
-            image_height,
-            image_width,
-
-            viewport_height,
-            viewport_width,
-
-            camera_center,
+            // viewport_height,
+            // viewport_width,
 
             viewport_u,
             viewport_v,
@@ -67,25 +55,35 @@ impl Camera {
             pixel_delta_u,
             pixel_delta_v,
 
-            viewport_upper_left,
-            pixel00_loc,
-        }
+            viewport_upper_left: Vec3::zero(),
+            pixel00_loc: Vec3::zero(),
+        };
+        camera.set(Point::new(0., 0., 0.), 1.);
+        camera
+    }
+
+    pub fn set(&mut self, position: Point, focal_length: f64) {
+        self.camera_center = position;
+        self.focal_length = focal_length;
+
+        self.viewport_upper_left = self.camera_center - Vec3::new(0.0, 0.0, self.focal_length) - (self.viewport_u / 2.0) - (self.viewport_v / 2.0);
+        self.pixel00_loc = self.viewport_upper_left + (self.pixel_delta_u + self.pixel_delta_v) * 0.5; // Center of the first pixel
     }
 
     pub fn render(&mut self, world: &HittableList, writter: &mut dyn Writter) {
         print!("Starting rendering...");
         let rendering_start = std::time::Instant::now();
         
-        for y in 0..self.image_height {
-            print!("\rStarting rendering... {:.2}%    ", 100. * ((self.image_height * y + 0) as f64) / ((self.image_width * self.image_height) as f64));
-            for x in 0..self.image_width {
+        for y in 0..self.image_info.height {
+            print!("\rStarting rendering... {:.2}%    ", 100. * ((self.image_info.width * y + 0) as f64) / ((self.image_info.width * self.image_info.height) as f64));
+            for x in 0..self.image_info.width {
                 let mut color_vec = Vec3::new(0., 0., 0.);
 
-                for _sample in 0..self.samples_per_pixel {
+                for _sample in 0..self.image_info.samples_per_pixel {
                     let ray = self.get_ray(x, y);
                     color_vec += self.ray_color(&ray, &world).to_vec();
                 }
-                writter.set_at((x, y), Color::from_vec(&(color_vec / (self.samples_per_pixel as f64))));
+                writter.set_at((x, y), Color::from_vec(&(color_vec / (self.image_info.samples_per_pixel as f64))));
             }
         }
 
