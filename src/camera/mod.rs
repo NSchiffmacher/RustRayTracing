@@ -82,7 +82,12 @@ impl Camera {
                     let ray = self.get_ray(x, y);
                     color_vec += self.ray_color(&ray, &world).to_vec();
                 }
-                writter.set_at((x, y), Color::from_vec(color_vec / (self.image_info.samples_per_pixel as f64)));
+
+                // Apply gamma correction
+                color_vec /= self.image_info.samples_per_pixel as f64;
+                color_vec = Vec3::new(color_vec.x().sqrt(), color_vec.y().sqrt(), color_vec.z().sqrt());
+
+                writter.set_at((x, y), Color::from_vec(color_vec));
             }
         }
 
@@ -112,8 +117,9 @@ impl Camera {
 
         if let Some(hit_record) = world.hit(ray, &Interval::positive()) {
             // let v = (hit_record.normal + Vec3::new(1., 1., 1.)) * 0.5;
-            let random = Vec3::random_vector_in_hemisphere(&hit_record.normal, &mut self.rng);
-            return self.ray_color_rec(&Ray::new(hit_record.point, random), world, depth - 1) * 0.5;
+            // let random = Vec3::random_vector_in_hemisphere(&hit_record.normal, &mut self.rng);
+            let direction = hit_record.normal + Vec3::random_unit_vector(&mut self.rng);
+            return self.ray_color_rec(&Ray::new(hit_record.point, direction), world, depth - 1) * 0.7;
         }
     
         let unit_direction = ray.direction().normalized();

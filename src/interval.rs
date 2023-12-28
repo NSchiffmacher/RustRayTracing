@@ -18,7 +18,7 @@ impl Interval {
     }
 
     pub fn positive() -> Self {
-        Self::new(0., f64::INFINITY)
+        Self::new(0.00001, f64::INFINITY)
     }
 
     pub fn contains(&self, value: f64) -> bool {
