@@ -1,4 +1,7 @@
 use crate::vector::Vec3;
+use crate::interval::Interval;
+
+const COLOR_RANGE: Interval = Interval { min: 0., max: 1. };
 
 #[derive(Clone)]
 pub struct Color {
@@ -9,15 +12,19 @@ pub struct Color {
 
 impl Color {
     pub fn new(r: f64, g: f64, b: f64) -> Self {
-        Self { r, g, b, }
+        Self { 
+            r: COLOR_RANGE.clamp(r), 
+            g: COLOR_RANGE.clamp(g), 
+            b: COLOR_RANGE.clamp(b)
+        }
     }
 
-    pub fn from_vec(v: &Vec3) -> Self {
-        assert!(v.x() >= 0. && v.x() <= 1.);
-        assert!(v.y() >= 0. && v.y() <= 1.);
-        assert!(v.z() >= 0. && v.z() <= 1.);
-        
+    pub fn from_vec(v: &Vec3) -> Self {        
         Self::new(v.x(), v.y(), v.z())
+    }
+
+    pub fn to_vec(&self) -> Vec3 {
+        Vec3::new(self.r, self.g, self.b)
     }
 
     pub fn to_ppm_string(&self) -> String {
@@ -54,5 +61,11 @@ impl Color {
 
     pub fn blue() -> Self {
         Self::new(0., 0., 1.)
+    }
+}
+
+impl std::ops::AddAssign for Color {
+    fn add_assign(&mut self, rhs: Self) {
+        *self = Self::new(self.r + rhs.r, self.g + rhs.g, self.b + rhs.b);
     }
 }
