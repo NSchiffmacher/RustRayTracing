@@ -31,8 +31,8 @@ impl Vec3 {
         self.z
     }
 
-    pub fn zero() -> Self {
-        Self::new(0., 0., 0.)
+    pub const fn zero() -> Self {
+        Self { x: 0., y: 0., z: 0. }
     }
 
     pub fn length_squared(&self) -> f64 {

@@ -11,38 +11,42 @@ use std::rc::Rc;
 
 fn main() -> Result<(), std::io::Error> {
     // Constants
-    let width = 400;
-    let aspect_ratio = 16.0 / 9.0;
-    let samples_per_pixel = 10;
-    let max_depth = 75;
-    let viewport_height = 2.0;
-    let camera_center = Point::new(0., 0., 0.);
-    let focal_length = 1.;
+    const WIDTH: usize = 800;
+    const ASPECT_RATIO: f64 = 16.0 / 9.0;
+    const SAMPLES_PER_PIXEL: usize = 100;
+    const MAX_DEPTH: usize = 50;
+    const CAMERA_CENTER: Point = Point::zero();
+    const VERTICAL_FOV: f64 = 90.0;
+    const FOCAL_LENGTH: f64 = 1.;
+    const FILEPATH: &str = "output/test.ppm";
+
+    const R: f64 = 0.70710678118;
+
+    // Materials
+    let material_left = Rc::new(Lambertian::new(Color::blue()));
+    let material_right = Rc::new(Lambertian::new(Color::red()));
+
+    // Objects
+    let mut world = HittableList::new();
+    world.add(Sphere::boxed(Point::new(-R, 0., -1.), R, material_left.clone()));
+    world.add(Sphere::boxed(Point::new(R, 0., -1.), R, material_right.clone()));
     
     // Image settings
-    let image_info = ImageInfo::from_aspect_ratio(aspect_ratio, width, "output/test.ppm".to_string(), samples_per_pixel, max_depth);
+    let image_info = ImageInfo::from_aspect_ratio(
+        ASPECT_RATIO, 
+        WIDTH, 
+        FILEPATH.to_string(), 
+        SAMPLES_PER_PIXEL, 
+        MAX_DEPTH
+    );
+
+    // Camera 
+    let mut camera = Camera::new(VERTICAL_FOV, image_info.clone());
+    camera.set(CAMERA_CENTER, FOCAL_LENGTH);
 
     // Output settings
     let mut writter: Box<dyn Writter> = Box::new(PpmWritter::new(image_info.clone()));
     writter.try_open()?;
-
-    // Materials
-    let material_ground = Rc::new(Lambertian::new(Color::new(0.8, 0.8, 0.0)));
-    let material_center = Rc::new(Lambertian::new(Color::new(0.1, 0.2, 0.5)));
-    let material_left = Rc::new(Dielectric::new(1.5));
-    let material_right = Rc::new(Metal::new(Color::new(0.8, 0.6, 0.2), 0.0));
-
-    // Objects
-    let mut world = HittableList::new();
-    world.add(Sphere::boxed(Point::new(0., -100.5, -1.), 100., material_ground.clone()));
-    world.add(Sphere::boxed(Point::new(0., 0., -1.), 0.5, material_center.clone()));
-    world.add(Sphere::boxed(Point::new(-1., 0., -1.), 0.5, material_left.clone()));
-    world.add(Sphere::boxed(Point::new(-1., 0., -1.), -0.4, material_left.clone()));
-    world.add(Sphere::boxed(Point::new(1., 0., -1.), 0.5, material_right.clone()));
-
-    // Camera 
-    let mut camera = Camera::new(viewport_height, image_info.clone());
-    camera.set(camera_center, focal_length);
 
     // Rendering
     camera.render(&world, &mut *writter);

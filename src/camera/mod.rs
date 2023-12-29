@@ -11,6 +11,8 @@ use rand::Rng;
 pub struct Camera {
     focal_length: f64,
     camera_center: Point,
+    vertical_fov: f64, // in radians
+
     image_info: ImageInfo,
     
     // viewport_height: f64,
@@ -27,30 +29,21 @@ pub struct Camera {
 }
 
 impl Camera {
-    pub fn new(viewport_height: f64, image_info: ImageInfo) -> Self {
-        let viewport_width = viewport_height * (image_info.width as f64) / (image_info.height as f64);
-
-        let viewport_u = Vec3::new(viewport_width, 0.0, 0.0); // Horizontal vector
-        let viewport_v = Vec3::new(0.0, -viewport_height, 0.0); // Vertical vector
-    
-        let pixel_delta_u = viewport_u / (image_info.width as f64);
-        let pixel_delta_v = viewport_v / (image_info.height as f64);
-    
+    pub fn new(vfov_degrees: f64, image_info: ImageInfo) -> Self {
+        let vfov = vfov_degrees.to_radians();
         let mut camera = Self {
             focal_length: 1.,
             camera_center: Point::zero(),
+            vertical_fov: vfov,
             image_info,
 
-            // viewport_height,
-            // viewport_width,
+            viewport_u: Vec3::zero(), // Set in the call to set()
+            viewport_v: Vec3::zero(), // Set in the call to set()
 
-            viewport_u,
-            viewport_v,
+            pixel_delta_u: Vec3::zero(), // Set in the call to set()
+            pixel_delta_v: Vec3::zero(), // Set in the call to set()
 
-            pixel_delta_u,
-            pixel_delta_v,
-
-            viewport_upper_left: Vec3::zero(),
+            viewport_upper_left: Vec3::zero(), // Set in the call to set()
             pixel00_loc: Vec3::zero(),
         };
         camera.set(Point::new(0., 0., 0.), 1.);
@@ -58,6 +51,17 @@ impl Camera {
     }
 
     pub fn set(&mut self, position: Point, focal_length: f64) {
+        // Compute the viewport dimensions from the fov
+        let h = (self.vertical_fov / 2.0).tan();
+        let viewport_height = 2. * h * focal_length;
+        let viewport_width = viewport_height * (self.image_info.width as f64) / (self.image_info.height as f64);
+
+        self.viewport_u = Vec3::new(viewport_width, 0.0, 0.0); // Horizontal vector
+        self.viewport_v = Vec3::new(0.0, -viewport_height, 0.0); // Vertical vector
+    
+        self.pixel_delta_u = self.viewport_u / (self.image_info.width as f64);
+        self.pixel_delta_v = self.viewport_v / (self.image_info.height as f64);
+
         self.camera_center = position;
         self.focal_length = focal_length;
 
