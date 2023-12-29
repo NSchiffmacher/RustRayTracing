@@ -14,6 +14,7 @@ pub struct HitRecord {
 
 impl HitRecord {
     pub fn new(point: Point, normal: Vec3, t: f64, ray: &Ray, material: Rc<dyn Material>) -> Self {
+        let normal = normal.normalized();
         Self {
             point,
             front_face: ray.direction().dot(&normal) < 0.,

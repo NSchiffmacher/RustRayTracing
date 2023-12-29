@@ -27,13 +27,12 @@ impl Dielectric {
 
 impl Material for Dielectric {
     fn scatter(&self, ray_in: &Ray, hit_record: &HitRecord) -> Option<(Color, Ray)> {
-        let attenuation = Color::white();
         let refraction_ratio = if hit_record.front_face { 1.0 / self.refraction_index } else { self.refraction_index };
-
+        
         let unit_direction = ray_in.direction().normalized();
         let cos_theta = (-unit_direction).dot(&hit_record.normal).min(1.0);
         let sin_theta = (1.0 - cos_theta * cos_theta).sqrt();
-
+        
         let mut rng = rand::thread_rng();
         let cannot_refract = refraction_ratio * sin_theta > 1.0;
 
@@ -45,6 +44,6 @@ impl Material for Dielectric {
         };
 
         let scattered = Ray::new(hit_record.point, ray_out);
-        Some((attenuation, scattered))
+        Some((Color::white(), scattered))
     }
 }

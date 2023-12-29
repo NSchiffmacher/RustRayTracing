@@ -53,7 +53,7 @@ impl Hittable for Sphere {
             }
 
             let hit_point = ray.at(t);
-            let normal = (hit_point - self.center).normalized();
+            let normal = (hit_point - self.center) / self.radius;
 
             return Some(HitRecord::new(hit_point, normal, t, ray, self.material.clone()));
         }

@@ -11,10 +11,10 @@ use std::rc::Rc;
 
 fn main() -> Result<(), std::io::Error> {
     // Constants
-    let width = 800;
+    let width = 400;
     let aspect_ratio = 16.0 / 9.0;
     let samples_per_pixel = 10;
-    let max_depth = 100;
+    let max_depth = 75;
     let viewport_height = 2.0;
     let camera_center = Point::new(0., 0., 0.);
     let focal_length = 1.;
