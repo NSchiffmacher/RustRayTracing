@@ -60,7 +60,8 @@ impl Vec3 {
         )
     }
 
-    pub fn random_in_sphere(rng: &mut rand::rngs::ThreadRng) -> Self {
+    pub fn random_in_sphere() -> Self {
+        let mut rng = rand::thread_rng();
         loop {
             let vec = Self::new(
                 rng.gen_range(-1.0..1.0),
@@ -73,16 +74,21 @@ impl Vec3 {
         }
     }
 
-    pub fn random_unit_vector(rng: &mut rand::rngs::ThreadRng) -> Self {
-        Self::random_in_sphere(rng).normalized()
+    pub fn random_unit_vector() -> Self {
+        Self::random_in_sphere().normalized()
     }
 
-    pub fn random_vector_in_hemisphere(normal: &Vec3, rng: &mut rand::rngs::ThreadRng) -> Vec3 {
-        let mut random_vec = Vec3::random_unit_vector(rng);
+    pub fn random_vector_in_hemisphere(normal: &Vec3) -> Vec3 {
+        let mut random_vec = Vec3::random_unit_vector();
         if random_vec.dot(normal) < 0.0 {
             random_vec = -random_vec;
         }
         random_vec
+    }
+
+    pub fn near_zero(&self) -> bool {
+        let epsilon = 1e-8;
+        self.x.abs() < epsilon && self.y.abs() < epsilon && self.z.abs() < epsilon
     }
 }
 

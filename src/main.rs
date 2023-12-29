@@ -1,10 +1,13 @@
 
 use raytracing::camera::Camera;
+use raytracing::color::Color;
+use raytracing::material::Lambertian;
 use raytracing::writter::{Writter, PpmWritter};
 use raytracing::vector::Point;
 use raytracing::hittable::{HittableList, Sphere};
 use raytracing::image_info::ImageInfo;
 
+use std::rc::Rc;
 
 fn main() -> Result<(), std::io::Error> {
     // Constants
@@ -23,10 +26,13 @@ fn main() -> Result<(), std::io::Error> {
     let mut writter: Box<dyn Writter> = Box::new(PpmWritter::new(image_info.clone()));
     writter.try_open()?;
 
+    // Materials
+    let lambertian = Rc::new(Lambertian::new(Color::new(0.7, 0.7, 0.7)));
+
     // Objects
     let mut world = HittableList::new();
-    world.add(Sphere::boxed(Point::new(0., 0., -1.), 0.5));
-    world.add(Sphere::boxed(Point::new(0., -100.5, -1.), 100.));
+    world.add(Sphere::boxed(Point::new(0., 0., -1.), 0.5, lambertian.clone()));
+    world.add(Sphere::boxed(Point::new(0., -100.5, -1.), 100., lambertian.clone()));
 
     // Camera 
     let mut camera = Camera::new(viewport_height, image_info.clone());

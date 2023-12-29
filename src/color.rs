@@ -13,9 +13,9 @@ pub struct Color {
 impl Color {
     pub fn new(r: f64, g: f64, b: f64) -> Self {
         Self { 
-            r: COLOR_RANGE.clamp(r), 
-            g: COLOR_RANGE.clamp(g), 
-            b: COLOR_RANGE.clamp(b)
+            r,
+            g,
+            b,
         }
     }
 
@@ -28,9 +28,13 @@ impl Color {
     }
 
     pub fn to_ppm_string(&self) -> String {
-        let ir = (self.r * 255.).floor() as u8;
-        let ig = (self.g * 255.).floor() as u8;
-        let ib = (self.b * 255.).floor() as u8;
+        let r = COLOR_RANGE.clamp(self.r);
+        let g = COLOR_RANGE.clamp(self.g);
+        let b = COLOR_RANGE.clamp(self.b);
+
+        let ir = (r * 255.).floor() as u8;
+        let ig = (g * 255.).floor() as u8;
+        let ib = (b * 255.).floor() as u8;
 
         format!("{} {} {}", ir, ig, ib)
     }
@@ -67,5 +71,39 @@ impl Color {
 impl std::ops::AddAssign for Color {
     fn add_assign(&mut self, rhs: Self) {
         *self = Self::new(self.r + rhs.r, self.g + rhs.g, self.b + rhs.b);
+    }
+}
+
+impl std::ops::Add for Color {
+    type Output = Self;
+    fn add(self, rhs: Self) -> Self::Output {
+        Self::new(self.r + rhs.r, self.g + rhs.g, self.b + rhs.b)
+    }
+}
+
+impl std::ops::Mul for Color {
+    type Output = Self;
+    fn mul(self, rhs: Self) -> Self::Output {
+        Self::new(self.r * rhs.r, self.g * rhs.g, self.b * rhs.b)
+    }
+}
+
+impl std::ops::MulAssign for Color {
+    fn mul_assign(&mut self, rhs: Self) {
+        *self = Self::new(self.r * rhs.r, self.g * rhs.g, self.b * rhs.b);
+    }
+
+}
+
+impl std::ops::Mul<f64> for Color {
+    type Output = Self;
+    fn mul(self, rhs: f64) -> Self::Output {
+        Self::new(self.r * rhs, self.g * rhs, self.b * rhs)
+    }
+}
+
+impl std::ops::MulAssign<f64> for Color {
+    fn mul_assign(&mut self, rhs: f64) {
+        *self = Self::new(self.r * rhs, self.g * rhs, self.b * rhs);
     }
 }

@@ -6,6 +6,9 @@ use raytracing::vector::{Point, Vec3};
 use raytracing::hittable::{HittableList, Sphere};
 use raytracing::interval::Interval;
 use raytracing::image_info::ImageInfo;
+use raytracing::material::Lambertian;
+
+use std::rc::Rc;
 
 fn ray_color(ray: &Ray, world: &HittableList) -> Color {
     if let Some(hit_record) = world.hit(ray, &Interval::positive()) {
@@ -49,10 +52,13 @@ fn main() -> Result<(), std::io::Error> {
     let viewport_upper_left = camera_center - Vec3::new(0.0, 0.0, focal_length) - (viewport_u / 2.0) - (viewport_v / 2.0);
     let pixel00_loc = viewport_upper_left + (pixel_delta_u + pixel_delta_v) * 0.5; // Center of the first pixel
 
+    // Materials
+    let lambertian = Rc::new(Lambertian::new(Color::new(0.7, 0.7, 0.7)));
+
     // Objects
     let mut world = HittableList::new();
-    world.add(Sphere::boxed(Point::new(0., 0., -1.), 0.5));
-    world.add(Sphere::boxed(Point::new(0., -100.5, -1.), 100.));
+    world.add(Sphere::boxed(Point::new(0., 0., -1.), 0.5, lambertian.clone()));
+    world.add(Sphere::boxed(Point::new(0., -100.5, -1.), 100., lambertian.clone()));
 
 
     // Rendering

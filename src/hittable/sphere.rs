@@ -2,22 +2,27 @@ use crate::vector::Point;
 use crate::hittable::{HitRecord, Hittable};
 use crate::interval::Interval;
 use crate::ray::Ray;
+use crate::material::Material;
+
+use std::rc::Rc;
 
 pub struct Sphere {
     center: Point,
     radius: f64,
+    material: Rc<dyn Material>,
 }
 
 impl Sphere {
-    pub fn new(center: Point, radius: f64) -> Self {
+    pub fn new(center: Point, radius: f64, material: Rc<dyn Material>) -> Self {
         Self {
             center,
             radius,
+            material,
         }
     }
 
-    pub fn boxed(center: Point, radius: f64) -> Box<Self> {
-        Box::new(Self::new(center, radius))
+    pub fn boxed(center: Point, radius: f64, material: Rc<dyn Material>) -> Box<Self> {
+        Box::new(Self::new(center, radius, material))
     }
 
     pub fn center(&self) -> &Point {
@@ -50,7 +55,7 @@ impl Hittable for Sphere {
             let hit_point = ray.at(t);
             let normal = (hit_point - self.center).normalized();
 
-            return Some(HitRecord::new(hit_point, normal, t, ray));
+            return Some(HitRecord::new(hit_point, normal, t, ray, self.material.clone()));
         }
 
         None
