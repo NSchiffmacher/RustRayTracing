@@ -1,7 +1,7 @@
 
 use raytracing::camera::Camera;
 use raytracing::color::Color;
-use raytracing::material::Lambertian;
+use raytracing::material::{Lambertian, Metal};
 use raytracing::writter::{Writter, PpmWritter};
 use raytracing::vector::Point;
 use raytracing::hittable::{HittableList, Sphere};
@@ -13,8 +13,8 @@ fn main() -> Result<(), std::io::Error> {
     // Constants
     let width = 800;
     let aspect_ratio = 16.0 / 9.0;
-    let samples_per_pixel = 10;
-    let max_depth = 50;
+    let samples_per_pixel = 25;
+    let max_depth = 100;
     let viewport_height = 2.0;
     let camera_center = Point::new(0., 0., 0.);
     let focal_length = 1.;
@@ -27,12 +27,17 @@ fn main() -> Result<(), std::io::Error> {
     writter.try_open()?;
 
     // Materials
-    let lambertian = Rc::new(Lambertian::new(Color::new(0.7, 0.7, 0.7)));
+    let material_ground = Rc::new(Lambertian::new(Color::new(0.8, 0.8, 0.0)));
+    let material_center = Rc::new(Lambertian::new(Color::new(0.7, 0.3, 0.3)));
+    let material_left = Rc::new(Metal::new(Color::new(0.8, 0.8, 0.8), 0.3));
+    let material_right = Rc::new(Metal::new(Color::new(0.8, 0.6, 0.2), 1.0));
 
     // Objects
     let mut world = HittableList::new();
-    world.add(Sphere::boxed(Point::new(0., 0., -1.), 0.5, lambertian.clone()));
-    world.add(Sphere::boxed(Point::new(0., -100.5, -1.), 100., lambertian.clone()));
+    world.add(Sphere::boxed(Point::new(0., -100.5, -1.), 100., material_ground.clone()));
+    world.add(Sphere::boxed(Point::new(0., 0., -1.), 0.5, material_center.clone()));
+    world.add(Sphere::boxed(Point::new(-1., 0., -1.), 0.5, material_left.clone()));
+    world.add(Sphere::boxed(Point::new(1., 0., -1.), 0.5, material_right.clone()));
 
     // Camera 
     let mut camera = Camera::new(viewport_height, image_info.clone());

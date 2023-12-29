@@ -76,7 +76,7 @@ impl Camera {
 
                 for _sample in 0..self.image_info.samples_per_pixel {
                     let ray = self.get_ray(x, y);
-                    color += self.ray_color(&ray, &world)
+                    color += self.ray_color(&ray, &world, self.image_info.max_depth)
                 }
 
                 // Apply gamma correction
@@ -106,25 +106,22 @@ impl Camera {
 
         self.pixel_delta_u * px + self.pixel_delta_v * py
     }
-
-    fn ray_color_rec(&mut self, ray: &Ray, world: &HittableList, depth: usize) -> Color {
+    
+    fn ray_color(&mut self, ray: &Ray, world: &HittableList, depth: usize) -> Color {
         if depth <= 0 {
             return Color::black();
         }
 
         if let Some(hit_record) = world.hit(ray, &Interval::positive()) {
             if let Some((attenuation, scattered_ray)) = hit_record.material.scatter(ray, &hit_record) {
-                return attenuation * self.ray_color_rec(&scattered_ray, world, depth - 1)
-            }
+                return attenuation * self.ray_color(&scattered_ray, world, depth - 1)
+            } 
+            return Color::black();
         }
     
         let unit_direction = ray.direction().normalized();
         let a = 0.5 * (unit_direction.y() + 1.0);
         
         Color::white().lerp(&Color::new(0.5, 0.7, 1.0), a)
-    }
-    
-    fn ray_color(&mut self, ray: &Ray, world: &HittableList) -> Color {
-        self.ray_color_rec(ray, world, self.image_info.max_depth)
     }
 }

@@ -86,6 +86,10 @@ impl Vec3 {
         random_vec
     }
 
+    pub fn reflect(&self, normal: &Vec3) -> Vec3 {
+        *self - 2. * self.dot(normal) * (*normal)
+    }
+
     pub fn near_zero(&self) -> bool {
         let epsilon = 1e-8;
         self.x.abs() < epsilon && self.y.abs() < epsilon && self.z.abs() < epsilon
@@ -136,6 +140,18 @@ impl ops::Mul<f64> for Vec3 {
             x: self.x * rhs,
             y: self.y * rhs,
             z: self.z * rhs,
+        }
+    }
+}
+
+impl ops::Mul<Vec3> for f64 {
+    type Output = Vec3;
+
+    fn mul(self, rhs: Vec3) -> Self::Output {
+        Vec3 {
+            x: self * rhs.x,
+            y: self * rhs.y,
+            z: self * rhs.z,
         }
     }
 }
