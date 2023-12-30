@@ -15,9 +15,7 @@ fn main() -> Result<(), std::io::Error> {
     let aspect_ratio = 16.0 / 9.0;
     let samples_per_pixel = 10;
     let max_depth = 75;
-    let camera_center = Point::new(0., 0., 0.);
     let vfov = 80.0;
-    let focal_length = 1.;
     
     // Image settings
     let image_info = ImageInfo::from_aspect_ratio(aspect_ratio, width, "output/base3.ppm".to_string(), samples_per_pixel, max_depth);
@@ -42,7 +40,6 @@ fn main() -> Result<(), std::io::Error> {
 
     // Camera 
     let mut camera = Camera::new(vfov, image_info.clone());
-    camera.set(camera_center, focal_length);
 
     // Rendering
     camera.render(&world, &mut *writter);

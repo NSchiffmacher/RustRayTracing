@@ -7,6 +7,7 @@ use crate::writter::Writter;
 use crate::image_info::ImageInfo;
 
 use rand::Rng;
+use std::io::Write;
 
 pub struct Camera {
     focal_length: f64,
@@ -46,53 +47,64 @@ impl Camera {
             viewport_upper_left: Vec3::zero(), // Set in the call to set()
             pixel00_loc: Vec3::zero(),
         };
-        camera.set(Point::new(0., 0., 0.), 1.);
+        camera.set(Point::new(0., 0., -1.), Point::new(0., 0., 0.), Vec3::new(0., 1., 0.));
         camera
     }
 
-    pub fn set(&mut self, position: Point, focal_length: f64) {
+    pub fn set(&mut self, look_from: Point, look_at: Point, up: Vec3) {
+        let focal_length = (look_from - look_at).length();
+
         // Compute the viewport dimensions from the fov
         let h = (self.vertical_fov / 2.0).tan();
         let viewport_height = 2. * h * focal_length;
         let viewport_width = viewport_height * (self.image_info.width as f64) / (self.image_info.height as f64);
 
-        self.viewport_u = Vec3::new(viewport_width, 0.0, 0.0); // Horizontal vector
-        self.viewport_v = Vec3::new(0.0, -viewport_height, 0.0); // Vertical vector
+        // Calculate the base vectors
+        let w = (look_from - look_at).normalized();
+        let u = up.cross(&w).normalized();
+        let v = w.cross(&u);
+
+        self.viewport_u = viewport_width * u;
+        self.viewport_v = - viewport_height * v;
     
         self.pixel_delta_u = self.viewport_u / (self.image_info.width as f64);
         self.pixel_delta_v = self.viewport_v / (self.image_info.height as f64);
 
-        self.camera_center = position;
+        self.camera_center = look_from;
         self.focal_length = focal_length;
 
-        self.viewport_upper_left = self.camera_center - Vec3::new(0.0, 0.0, self.focal_length) - (self.viewport_u / 2.0) - (self.viewport_v / 2.0);
+        self.viewport_upper_left = self.camera_center - (focal_length * w) - (self.viewport_u + self.viewport_v) / 2.;
         self.pixel00_loc = self.viewport_upper_left + (self.pixel_delta_u + self.pixel_delta_v) * 0.5; // Center of the first pixel
     }
 
     pub fn render(&mut self, world: &HittableList, writter: &mut dyn Writter) {
         print!("Starting rendering...");
+        std::io::stdout().flush().unwrap();
         let rendering_start = std::time::Instant::now();
         
         for y in 0..self.image_info.height {
+            // if y % 4 == 0 {
             print!("\rStarting rendering... {:.2}%    ", 100. * ((self.image_info.width * y + 0) as f64) / ((self.image_info.width * self.image_info.height) as f64));
+            std::io::stdout().flush().unwrap();
+            // }
             for x in 0..self.image_info.width {
                 let mut color = Color::black();
-
+                
                 for _sample in 0..self.image_info.samples_per_pixel {
                     let ray = self.get_ray(x, y);
                     color += self.ray_color(&ray, &world, self.image_info.max_depth)
                 }
-
+                
                 // Apply gamma correction
                 color *= 1. / (self.image_info.samples_per_pixel as f64);
                 color = Color::new(color.r.sqrt(), color.g.sqrt(), color.b.sqrt());
-
+                
                 writter.set_at((x, y), color);
             }
         }
-
+        
         print!("\rStarting rendering... Done in {:.2}s.\nSaving...", rendering_start.elapsed().as_secs_f64());
-
+        std::io::stdout().flush().unwrap();
     }
 
     fn get_ray(&mut self, x: usize, y: usize) -> Ray {
