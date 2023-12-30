@@ -11,26 +11,19 @@ use std::rc::Rc;
 
 fn main() -> Result<(), std::io::Error> {
     // Constants
-    const FILEPATH: &str = "output/base3.ppm";
+    const FILEPATH: &str = "output/base5.ppm";
     const WIDTH: usize = 800;
     const ASPECT_RATIO: f64 = 16.0 / 9.0;
 
     const SAMPLES_PER_PIXEL: usize = 100;
     const MAX_DEPTH: usize = 50;
     
-    const VERTICAL_FOV: f64 = 80.0;
-    const LOOK_FROM: Point = Point::new(0., 0., 0.);
+    const VERTICAL_FOV: f64 = 20.0;
+    const LOOK_FROM: Point = Point::new(-2., 2.,1.);
     const LOOK_AT: Point = Point::new(0., 0., -1.);
-    const DEFOCUS_ANGLE: f64 = 0.0;
-    const FOCUS_DISTANCE: f64 = 1.0;
+    const DEFOCUS_ANGLE: f64 = 10.0;
+    const FOCUS_DISTANCE: f64 = 3.4;
     const UP: Point = Point::new(0., 1., 0.);
-    
-    // Image settings
-    let image_info = ImageInfo::from_aspect_ratio(ASPECT_RATIO, WIDTH, FILEPATH.to_string(), SAMPLES_PER_PIXEL, MAX_DEPTH);
-
-    // Output settings
-    let mut writter: Box<dyn Writter> = Box::new(PpmWritter::new(image_info.clone()));
-    writter.try_open()?;
 
     // Materials
     let material_ground = Rc::new(Lambertian::new(Color::new(0.8, 0.8, 0.0)));
@@ -45,15 +38,24 @@ fn main() -> Result<(), std::io::Error> {
     world.add(Sphere::boxed(Point::new(-1., 0., -1.), 0.5, material_left.clone()));
     world.add(Sphere::boxed(Point::new(-1., 0., -1.), -0.4, material_left.clone()));
     world.add(Sphere::boxed(Point::new(1., 0., -1.), 0.5, material_right.clone()));
+    
+    // Image settings
+    let image_info = ImageInfo::from_aspect_ratio(
+        ASPECT_RATIO, 
+        WIDTH, 
+        FILEPATH.to_string(), 
+        SAMPLES_PER_PIXEL, 
+        MAX_DEPTH
+    );
+
 
     // Camera 
     let mut camera = Camera::new(VERTICAL_FOV, image_info.clone());
-    camera.set(
-        LOOK_FROM, 
-        LOOK_AT, 
-        FOCUS_DISTANCE, 
-        DEFOCUS_ANGLE,
-        UP);
+    camera.set(LOOK_FROM, LOOK_AT, FOCUS_DISTANCE, DEFOCUS_ANGLE, UP);
+
+    // Output settings
+    let mut writter: Box<dyn Writter> = Box::new(PpmWritter::new(image_info.clone()));
+    writter.try_open()?;
 
     // Rendering
     camera.render(&world, &mut *writter);
