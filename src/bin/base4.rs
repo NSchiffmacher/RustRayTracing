@@ -45,7 +45,7 @@ fn main() -> Result<(), std::io::Error> {
 
     // Camera 
     let mut camera = Camera::new(VERTICAL_FOV, image_info.clone());
-    camera.set(LOOK_FROM, LOOK_AT, UP);
+    camera.set(LOOK_FROM, LOOK_AT, (LOOK_AT - LOOK_FROM).length(), 0., UP);
 
     // Output settings
     let mut writter: Box<dyn Writter> = Box::new(PpmWritter::new(image_info.clone()));

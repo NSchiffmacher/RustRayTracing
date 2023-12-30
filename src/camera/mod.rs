@@ -10,7 +10,9 @@ use rand::Rng;
 use std::io::Write;
 
 pub struct Camera {
-    focal_length: f64,
+    focus_distance: f64,
+    defocus_angle: f64,
+
     camera_center: Point,
     vertical_fov: f64, // in radians
 
@@ -25,6 +27,9 @@ pub struct Camera {
     pixel_delta_u: Vec3,
     pixel_delta_v: Vec3,
 
+    defocus_disk_u: Vec3,
+    defocus_disk_v: Vec3,
+
     viewport_upper_left: Vec3,
     pixel00_loc: Vec3,
 }
@@ -33,7 +38,9 @@ impl Camera {
     pub fn new(vfov_degrees: f64, image_info: ImageInfo) -> Self {
         let vfov = vfov_degrees.to_radians();
         let mut camera = Self {
-            focal_length: 1.,
+            focus_distance: 1.,
+            defocus_angle: 0.,
+
             camera_center: Point::zero(),
             vertical_fov: vfov,
             image_info,
@@ -41,22 +48,26 @@ impl Camera {
             viewport_u: Vec3::zero(), // Set in the call to set()
             viewport_v: Vec3::zero(), // Set in the call to set()
 
+            defocus_disk_u: Vec3::zero(), // Set in the call to set()
+            defocus_disk_v: Vec3::zero(), // Set in the call to set()
+
             pixel_delta_u: Vec3::zero(), // Set in the call to set()
             pixel_delta_v: Vec3::zero(), // Set in the call to set()
 
             viewport_upper_left: Vec3::zero(), // Set in the call to set()
             pixel00_loc: Vec3::zero(),
         };
-        camera.set(Point::new(0., 0., -1.), Point::new(0., 0., 0.), Vec3::new(0., 1., 0.));
+        camera.set(Point::new(0., 0., -1.), Point::new(0., 0., 0.), 1., 0., Vec3::new(0., 1., 0.));
         camera
     }
 
-    pub fn set(&mut self, look_from: Point, look_at: Point, up: Vec3) {
-        let focal_length = (look_from - look_at).length();
+    pub fn set(&mut self, look_from: Point, look_at: Point, focus_distance: f64, defocus_angle: f64, up: Vec3) {
+        self.focus_distance = focus_distance;
+        self.defocus_angle = defocus_angle;
 
         // Compute the viewport dimensions from the fov
         let h = (self.vertical_fov / 2.0).tan();
-        let viewport_height = 2. * h * focal_length;
+        let viewport_height = 2. * h * self.focus_distance;
         let viewport_width = viewport_height * (self.image_info.width as f64) / (self.image_info.height as f64);
 
         // Calculate the base vectors
@@ -70,10 +81,13 @@ impl Camera {
         self.pixel_delta_u = self.viewport_u / (self.image_info.width as f64);
         self.pixel_delta_v = self.viewport_v / (self.image_info.height as f64);
 
-        self.camera_center = look_from;
-        self.focal_length = focal_length;
+        let defocus_radius = self.focus_distance * (self.defocus_angle / 2.).to_radians().tan();
+        self.defocus_disk_u = defocus_radius * u;
+        self.defocus_disk_v = defocus_radius * v;
 
-        self.viewport_upper_left = self.camera_center - (focal_length * w) - (self.viewport_u + self.viewport_v) / 2.;
+        self.camera_center = look_from;
+
+        self.viewport_upper_left = self.camera_center - (self.focus_distance * w) - (self.viewport_u + self.viewport_v) / 2.;
         self.pixel00_loc = self.viewport_upper_left + (self.pixel_delta_u + self.pixel_delta_v) * 0.5; // Center of the first pixel
     }
 
@@ -111,11 +125,23 @@ impl Camera {
         let pixel_center = self.pixel00_loc + (self.pixel_delta_u * (x as f64)) + (self.pixel_delta_v * (y as f64));
         let pixel_sample = pixel_center + self.pixel_random_square();
 
-        let ray_direction = pixel_sample - self.camera_center;
-        Ray::new(self.camera_center, ray_direction)
+        let ray_origin: Vec3 = if self.defocus_angle <= 0.0 {
+            self.camera_center
+        } else {
+            self.defocus_disk_sample()
+        };
+
+        let ray_direction = pixel_sample - ray_origin;
+        Ray::new(ray_origin, ray_direction)
     }
 
-    fn pixel_random_square(&mut self) -> Vec3 {
+    fn defocus_disk_sample(&self) -> Point {
+        // Returns a random point in the camera defocus disk.
+        let p = Point::random_in_disk();
+        self.camera_center + (p.x() * self.defocus_disk_u) + (p.y() * self.defocus_disk_v)
+    }
+
+    fn pixel_random_square(&mut self) -> Point {
         let mut rng = rand::thread_rng();
         let px = rng.gen_range(-0.5..0.5);
         let py = rng.gen_range(-0.5..0.5);
