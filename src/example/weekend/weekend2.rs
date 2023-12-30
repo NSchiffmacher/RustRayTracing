@@ -32,7 +32,7 @@ fn main() -> Result<(), std::io::Error> {
     let height = ((width as f64) / aspect_ratio) as usize;
 
     // Output settings
-    let image_info = ImageInfo::new(width, height, "output/base2.ppm".to_string(), 1, 1);
+    let image_info = ImageInfo::new(width, height, "output/weekend/weekend2.ppm".to_string(), 1, 1);
     let mut writter: Box<dyn Writter> = Box::new(PpmWritter::new(image_info.clone()));
     writter.try_open()?;
 

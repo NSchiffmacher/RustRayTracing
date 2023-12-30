@@ -12,7 +12,7 @@ use rand::Rng;
 
 fn main() -> Result<(), std::io::Error> {
     // Constants
-    const FILEPATH: &str = "output/weekend_final.ppm";
+    const FILEPATH: &str = "output/weekend/weekend_final.ppm";
     const WIDTH: usize = 800;
     const ASPECT_RATIO: f64 = 16.0 / 9.0;
 

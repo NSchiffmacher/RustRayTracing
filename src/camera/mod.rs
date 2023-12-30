@@ -97,10 +97,24 @@ impl Camera {
         let rendering_start = std::time::Instant::now();
         
         for y in 0..self.image_info.height {
-            // if y % 4 == 0 {
-            print!("\rStarting rendering... {:.2}%    ", 100. * ((self.image_info.width * y + 0) as f64) / ((self.image_info.width * self.image_info.height) as f64));
+            let prc_as_ratio = ((self.image_info.width * y + 0) as f64) / ((self.image_info.width * self.image_info.height) as f64);
+            let prc_per_second = prc_as_ratio / rendering_start.elapsed().as_secs_f64();
+            let remaining_time = (1. - prc_as_ratio) / prc_per_second; 
+            let eta_str = if remaining_time < 60. {
+                format!("{}s", remaining_time as usize)
+            } else {
+                let min = (remaining_time / 60.).floor();
+                let min_str = if min < 300. {
+                    format!("{}", min as usize)
+                } else {
+                    format!("inf ")
+                };
+                format!("{}min {}s", min_str, (remaining_time % 60.) as usize)
+            };
+
+            print!("\rStarting rendering... {:.2}% (ETA: {})             ", 100. * prc_as_ratio, eta_str);
             std::io::stdout().flush().unwrap();
-            // }
+
             for x in 0..self.image_info.width {
                 let mut color = Color::black();
                 
@@ -117,7 +131,7 @@ impl Camera {
             }
         }
         
-        print!("\rStarting rendering... Done in {:.2}s.\nSaving...", rendering_start.elapsed().as_secs_f64());
+        print!("\rStarting rendering... Done in {:.2}s.                 \nSaving...", rendering_start.elapsed().as_secs_f64());
         std::io::stdout().flush().unwrap();
     }
 
