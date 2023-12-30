@@ -6,13 +6,15 @@ use crate::vector::{Vec3, Point};
 pub struct Ray {
     origin: Point,
     direction: Vec3,
+    time: f64,
 }
 
 impl Ray {
-    pub fn new(origin: Point, direction: Vec3) -> Self {
+    pub fn new(origin: Point, direction: Vec3, time: f64) -> Self {
         Self {
             origin,
             direction,
+            time,
         }
     }
 
@@ -22,6 +24,10 @@ impl Ray {
 
     pub fn direction(&self) -> &Point {
         &self.direction
+    }
+
+    pub fn time(&self) -> f64 {
+        self.time
     }
 
     pub fn at(&self, t: f64) -> Point {
@@ -37,7 +43,7 @@ mod tests {
     fn test_new() {
         let origin = Point::new(1., 2., 3.);
         let direction = Vec3::new(4., 5., 6.);
-        let ray = Ray::new(origin.clone(), direction.clone());
+        let ray = Ray::new(origin.clone(), direction.clone(), 0.);
 
         assert_eq!(*ray.origin(), origin);
         assert_eq!(*ray.direction(), direction);
@@ -47,7 +53,7 @@ mod tests {
     fn test_at() {
         let origin = Point::new(1., 2., 3.);
         let direction = Vec3::new(4., 5., 6.);
-        let ray = Ray::new(origin.clone(), direction.clone());
+        let ray = Ray::new(origin.clone(), direction.clone(), 0.);
 
         assert_eq!(ray.at(0.), origin);
         assert_eq!(ray.at(1.), origin + direction);

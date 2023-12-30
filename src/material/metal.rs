@@ -25,7 +25,7 @@ impl Material for Metal {
             return None;
         }
 
-        let scattered = Ray::new(hit_record.point, reflected);
+        let scattered = Ray::new(hit_record.point, reflected, ray_in.time());
         Some((self.albedo.clone(), scattered))
     }
 }

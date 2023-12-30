@@ -57,7 +57,14 @@ fn main() -> Result<(), std::io::Error> {
                     // glass
                     Rc::new(Dielectric::new(1.5))
                 };
-                world.add(Sphere::boxed(center, 0.2, material));
+
+                let moving_proba = rng.gen_range(0f64..1f64);
+                if moving_proba < 0.2 {
+                    let final_center = center + Point::new(0., rng.gen_range(0f64..0.5), 0.);
+                    world.add(Sphere::boxed_moving(center, final_center, 0.2, material))
+                } else {
+                    world.add(Sphere::boxed(center, 0.2, material));
+                }
             }
         }
     }

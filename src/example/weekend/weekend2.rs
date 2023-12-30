@@ -70,7 +70,7 @@ fn main() -> Result<(), std::io::Error> {
         for x in 0..width {
             let pixel_center = pixel00_loc + (pixel_delta_u * (x as f64)) + (pixel_delta_v * (y as f64));
             let ray_direction = pixel_center - camera_center;
-            let ray = Ray::new(camera_center, ray_direction);
+            let ray = Ray::new(camera_center, ray_direction, 0.);
 
             let color = ray_color(&ray, &world);
             writter.set_at((x, y), color);

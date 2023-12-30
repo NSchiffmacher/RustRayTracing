@@ -136,6 +136,8 @@ impl Camera {
     }
 
     fn get_ray(&mut self, x: usize, y: usize) -> Ray {
+        let mut rng = rand::thread_rng();
+
         let pixel_center = self.pixel00_loc + (self.pixel_delta_u * (x as f64)) + (self.pixel_delta_v * (y as f64));
         let pixel_sample = pixel_center + self.pixel_random_square();
 
@@ -144,9 +146,10 @@ impl Camera {
         } else {
             self.defocus_disk_sample()
         };
+        let ray_time = rng.gen_range(0.0..1.0);
 
         let ray_direction = pixel_sample - ray_origin;
-        Ray::new(ray_origin, ray_direction)
+        Ray::new(ray_origin, ray_direction, ray_time)
     }
 
     fn defocus_disk_sample(&self) -> Point {
