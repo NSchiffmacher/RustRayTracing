@@ -30,6 +30,10 @@ path = "src/example/weekend/weekend5.rs"
 name = "weekend"
 path = "src/example/weekend/weekend_final.rs"
 
+[[example]]
+name = "week1"
+path = "src/example/week/week1.rs"
+
 
 [dependencies]
 rand = "0.8.5"

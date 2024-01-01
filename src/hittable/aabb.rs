@@ -46,24 +46,23 @@ impl AABB {
     }
 
     pub fn hit(&self, ray: &Ray, ray_t: &Interval) -> bool {
-        // ! TO OPTIMIZE
         let mut tmin = ray_t.min;
         let mut tmax = ray_t.max;
 
-        let tx1 = (self.x.min - ray.origin().x()) / ray.direction().x();
-        let tx2 = (self.x.max - ray.origin().x()) / ray.direction().x();
+        let tx1 = (self.x.min - ray.origin().x()) * ray.inv_direction().x();
+        let tx2 = (self.x.max - ray.origin().x()) * ray.inv_direction().x();
 
         tmin = f64::min(f64::max(tx1, tmin), f64::max(tx2, tmin));
         tmax = f64::max(f64::min(tx1, tmax), f64::min(tx2, tmax));
 
-        let ty1 = (self.y.min - ray.origin().y()) / ray.direction().y();
-        let ty2 = (self.y.max - ray.origin().y()) / ray.direction().y();
+        let ty1 = (self.y.min - ray.origin().y()) * ray.inv_direction().y();
+        let ty2 = (self.y.max - ray.origin().y()) * ray.inv_direction().y();
 
         tmin = f64::min(f64::max(ty1, tmin), f64::max(ty2, tmin));
         tmax = f64::max(f64::min(ty1, tmax), f64::min(ty2, tmax));
 
-        let tz1 = (self.z.min - ray.origin().z()) / ray.direction().z();
-        let tz2 = (self.z.max - ray.origin().z()) / ray.direction().z();
+        let tz1 = (self.z.min - ray.origin().z()) * ray.inv_direction().z();
+        let tz2 = (self.z.max - ray.origin().z()) * ray.inv_direction().z();
 
         tmin = f64::min(f64::max(tz1, tmin), f64::max(tz2, tmin));
         tmax = f64::max(f64::min(tz1, tmax), f64::min(tz2, tmax));
