@@ -4,6 +4,7 @@ use crate::image_info::ImageInfo;
 
 use std::fs::File;
 use std::io::prelude::*;
+use indicatif::{ProgressStyle, ProgressIterator};
 
 pub struct PpmWritter {
     image_info: ImageInfo,
@@ -39,14 +40,20 @@ impl Writter for PpmWritter {
     }
 
     fn save(&self) -> Result<(), std::io::Error> {
+        let progress_style = ProgressStyle::with_template("{spinner:.green} [{elapsed_precise}] [{wide_bar:.green/blue}] {percent}% ({eta_precise})")
+            .unwrap()
+            .progress_chars("=>-");
+        let saving_start = std::time::Instant::now();
         let mut file = File::create(self.image_info.filepath.clone())?;
 
         write!(file, "P3\n{} {}\n255\n", self.image_info.width, self.image_info.height)?;
-        for y in 0..self.image_info.height {
+        for y in (0..self.image_info.height).progress_with_style(progress_style) {
             for x in 0..self.image_info.width {
                 write!(file, "{}\n", self.data[y][x].to_ppm_string())?;
             }
         }
+
+        println!("Saving done in {:.2}s.\r", saving_start.elapsed().as_secs_f64());
 
         Ok(())
     }

@@ -36,6 +36,8 @@ path = "src/example/week/week1.rs"
 
 
 [dependencies]
+indicatif = "0.17.7"
 rand = "0.8.5"
 remove_dir_all = "0.8.2"
 tempdir = "0.3.7"
+termion = "2.0.3"

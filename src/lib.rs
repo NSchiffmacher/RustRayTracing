@@ -7,3 +7,4 @@ pub mod interval;
 pub mod camera;
 pub mod image_info;
 pub mod material;
+pub mod terminal;

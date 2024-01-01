@@ -6,6 +6,7 @@ use raytracing::writter::{Writter, PpmWritter};
 use raytracing::vector::Point;
 use raytracing::hittable::{HittableList, Sphere};
 use raytracing::image_info::ImageInfo;
+use raytracing::terminal::{Terminal, Position};
 
 use std::rc::Rc;
 use rand::Rng;
@@ -25,6 +26,8 @@ fn main() -> Result<(), std::io::Error> {
     const DEFOCUS_ANGLE: f64 = 0.6;
     const FOCUS_DISTANCE: f64 = 10.0;
     const UP: Point = Point::new(0., 1., 0.);
+
+    welcome_message();
 
     let ground_material = Rc::new(Lambertian::new(Color::new(0.5, 0.5, 0.5)));
     let mut world = HittableList::new();
@@ -89,7 +92,6 @@ fn main() -> Result<(), std::io::Error> {
         MAX_DEPTH
     );
 
-
     // Camera 
     let mut camera = Camera::new(VERTICAL_FOV, image_info.clone());
     camera.set(LOOK_FROM, LOOK_AT, FOCUS_DISTANCE, DEFOCUS_ANGLE, UP);
@@ -98,13 +100,22 @@ fn main() -> Result<(), std::io::Error> {
     let mut writter: Box<dyn Writter> = Box::new(PpmWritter::new(image_info.clone()));
     writter.try_open()?;
 
+    Terminal::cursor_position(&Position{ x: 2, y: 5});
+    println!("* Rendering image \"{}\"\r", FILEPATH);
+
     // Rendering
     camera.render(&world, &mut *writter);
 
     // Saving
-    let saving_start = std::time::Instant::now();
     writter.save()?;
-    print!("\rSaving... Saving done in {:.2}s.\n", saving_start.elapsed().as_secs_f64());
 
     Ok(())
+}
+
+fn welcome_message() {
+    Terminal::clear_screen();
+    Terminal::cursor_position(&Position{ x: 0, y: 1});
+    println!("{}\r", Terminal::repeated('='));
+    println!("{}\r", Terminal::centered(" Shitty Raytracer ", '='));
+    println!("{}\r", Terminal::repeated('='));
 }
