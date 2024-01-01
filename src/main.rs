@@ -77,6 +77,8 @@ fn main() -> Result<(), std::io::Error> {
 
     let mat3 = Rc::new(Metal::new(Color::new(0.7, 0.6, 0.5), 0.));
     world.add(Sphere::boxed(Point::new(4., 1., 0.), 1., mat3));
+
+    let world = world.to_bvh();
     
     // Image settings
     let image_info = ImageInfo::from_aspect_ratio(

@@ -19,6 +19,15 @@ impl Vec3 {
         }
     }
 
+    pub fn axis(&self, axis: usize) -> f64 {
+        match axis {
+            0 => self.x,
+            1 => self.y,
+            2 => self.z,
+            _ => panic!("Invalid axis"),
+        }
+    }
+
     pub fn x(&self) -> f64 {
         self.x
     }

@@ -3,7 +3,7 @@ use raytracing::color::Color;
 use raytracing::writter::{Writter, PpmWritter};
 use raytracing::ray::Ray;
 use raytracing::vector::{Point, Vec3};
-use raytracing::hittable::{HittableList, Sphere};
+use raytracing::hittable::{HittableList, Hittable, Sphere};
 use raytracing::interval::Interval;
 use raytracing::image_info::ImageInfo;
 use raytracing::material::Lambertian;

@@ -1,5 +1,5 @@
 
-
+#[derive(Debug, Clone, Copy)]
 pub struct Interval {
     pub min: f64,
     pub max: f64,
@@ -13,8 +13,8 @@ impl Interval {
         }
     }
 
-    pub fn default() -> Self {
-        Self::new(-f64::INFINITY, f64::INFINITY)
+    pub fn surrounding(&self, other: &Self) -> Self {
+        Self::new(self.min.min(other.min), self.max.max(other.max))
     }
 
     pub fn positive() -> Self {

@@ -1,5 +1,5 @@
 use crate::ray::Ray;
-use crate::hittable::HittableList;
+use crate::hittable::{HittableList, Hittable};
 use crate::interval::Interval;
 use crate::color::Color;
 use crate::vector::{Vec3, Point};

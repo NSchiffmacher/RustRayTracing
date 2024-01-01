@@ -1,27 +1,49 @@
-use crate::hittable::{Hittable, HitRecord};
+use crate::hittable::{Hittable, HitRecord, AABB, BvhTree};
 use crate::ray::Ray;
 use crate::interval::Interval;
 
+use std::rc::Rc;
+use std::cell::RefCell;
+
 pub struct HittableList {
-    objects: Vec<Box<dyn Hittable>>,
+    objects: Rc<RefCell<Vec<Box<dyn Hittable>>>>,
+    bbox: AABB,
 }
 
 impl HittableList {
     pub fn new() -> Self {
         Self {
-            objects: Vec::new(),
+            objects: Rc::new(RefCell::new(Vec::new())),
+            bbox: AABB::empty(),
         }
     }
 
     pub fn add(&mut self, object: Box<dyn Hittable>) {
-        self.objects.push(object);
+        self.bbox = self.bbox.surrounding_box(&object.bounding_box());
+        self.objects.borrow_mut().push(object);
     }
 
-    pub fn hit(&self, ray: &Ray, ray_t: &Interval) -> Option<HitRecord> {
+    pub fn objects(&self) -> Rc<RefCell<Vec<Box<dyn Hittable>>>> {
+        self.objects.clone()
+    }
+
+    pub fn to_bvh(&self) -> Self {
+        let tree = BvhTree::from_list(self);
+        let bbox = tree.bounding_box();
+
+        Self {
+            objects: Rc::new(RefCell::new(vec![Box::new(tree)])),
+            bbox,
+        }
+    }
+}
+
+impl Hittable for HittableList {
+    fn hit(&self, ray: &Ray, ray_t: &Interval) -> Option<HitRecord> {
         let mut hit_record = None;
         let mut min_dist = ray_t.max;
 
-        for object in self.objects.iter() {
+        for object in self.objects.borrow().iter() {
             if let Some(hit_rec) = object.hit(ray, &Interval::new(ray_t.min, min_dist)) {
                 min_dist = hit_rec.t;
                 hit_record = Some(hit_rec);
@@ -29,5 +51,9 @@ impl HittableList {
         }
 
         hit_record
+    }
+
+    fn bounding_box(&self) -> AABB {
+        self.bbox
     }
 }
