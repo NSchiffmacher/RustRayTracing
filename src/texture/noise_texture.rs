@@ -19,6 +19,8 @@ impl NoiseTexture {
 
 impl Texture for NoiseTexture {
     fn value(&self, _uv: &Uv, p: &Vec3) -> Color {
-        Color::white() * 0.5 * (1. + self.noise_generator.noise(&(*p * self.scale)))
+        // let noise = self.noise_generator.turb(&(*p * self.scale), 7);
+        let noise = 0.5 * (1. + (p.z() + 10. * self.noise_generator.turb(&(*p * self.scale), 7)).sin());
+        Color::white() * noise
     }
 }
