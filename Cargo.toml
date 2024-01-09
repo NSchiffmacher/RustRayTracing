@@ -34,10 +34,14 @@ path = "src/example/weekend/weekend_final.rs"
 name = "week1"
 path = "src/example/week/week1.rs"
 
+[[example]]
+name = "week2"
+path = "src/example/week/week2.rs"
+
 
 [dependencies]
+image = "0.24.7"
 indicatif = "0.17.7"
 rand = "0.8.5"
-remove_dir_all = "0.8.2"
 tempdir = "0.3.7"
 termion = "2.0.3"

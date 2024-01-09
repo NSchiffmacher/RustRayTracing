@@ -3,6 +3,7 @@ use crate::hittable::{HitRecord, Hittable, AABB};
 use crate::interval::Interval;
 use crate::ray::Ray;
 use crate::material::Material;
+use crate::texture::Uv;
 
 use std::rc::Rc;
 
@@ -60,6 +61,18 @@ impl Sphere {
     pub fn radius(&self) -> f64 {
         self.radius
     }
+
+    fn compute_uv(p: &Vec3) -> Uv {
+        // p must be a unit vector
+
+        let theta = (-p.y()).acos();
+        let phi = (-p.z()).atan2(p.x()) + std::f64::consts::PI;
+
+        Uv {
+            u: phi / (2. * std::f64::consts::PI),
+            v: theta / std::f64::consts::PI,
+        }
+    }
 }
 
 impl Hittable for Sphere {
@@ -87,9 +100,10 @@ impl Hittable for Sphere {
             }
 
             let hit_point = ray.at(t);
-            let normal = (hit_point - center) / self.radius;
+            let normal = ((hit_point - center) / self.radius).normalized();
+            let uv = Self::compute_uv(&normal);
 
-            return Some(HitRecord::new(hit_point, normal, t, ray, self.material.clone()));
+            return Some(HitRecord::new(hit_point, normal, t, uv, ray, self.material.clone()));
         }
 
         None

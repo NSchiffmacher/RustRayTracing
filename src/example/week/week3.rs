@@ -12,8 +12,8 @@ use std::rc::Rc;
 
 fn main() -> Result<(), std::io::Error> {
     // Constants
-    const FILEPATH: &str = "output/test.ppm";
-    const WIDTH: usize = 400;
+    const FILEPATH: &str = "output/week/week3.ppm";
+    const WIDTH: usize = 800;
     const ASPECT_RATIO: f64 = 16.0 / 9.0;
 
     const SAMPLES_PER_PIXEL: usize = 100;
