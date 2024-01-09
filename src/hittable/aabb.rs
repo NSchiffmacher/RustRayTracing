@@ -14,6 +14,14 @@ impl AABB {
         Self { x, y, z }
     }
 
+    pub fn pad(&self) -> Self {
+        let delta = 0.0001;
+        let x = if self.x.size() >= delta { self.x } else { self.x.expand(delta) };
+        let y = if self.y.size() >= delta { self.y } else { self.y.expand(delta) };
+        let z = if self.z.size() >= delta { self.z } else { self.z.expand(delta) };
+        Self::new(x, y, z)
+    }
+
     pub fn empty() -> Self {
         Self {
             x: Interval::new(0., 0.), // ! MIGHT HAVE TO CHANGE THAT (+inf, -inf) ? 

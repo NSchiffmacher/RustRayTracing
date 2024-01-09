@@ -29,6 +29,14 @@ impl Interval {
         self.min < value && value < self.max
     }
 
+    pub fn expand(&self, value: f64) -> Self {
+        Self::new(self.min - value, self.max + value)
+    }
+
+    pub fn size(&self) -> f64 {
+        self.max - self.min
+    }
+
     pub fn clamp(&self, value: f64) -> f64 {
         if value < self.min {
             self.min
