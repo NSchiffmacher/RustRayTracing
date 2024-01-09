@@ -6,7 +6,7 @@ use raytracing::vector::Point;
 use raytracing::hittable::{HittableList, Sphere};
 use raytracing::image_info::ImageInfo;
 use raytracing::terminal::{Terminal, Position};
-use raytracing::texture::ImageTexture;
+use raytracing::texture::NoiseTexture;
 
 use std::rc::Rc;
 
@@ -20,7 +20,7 @@ fn main() -> Result<(), std::io::Error> {
     const MAX_DEPTH: usize = 50;
     
     const VERTICAL_FOV: f64 = 20.0;
-    const LOOK_FROM: Point = Point::new(12.,0.,0.);
+    const LOOK_FROM: Point = Point::new(13.,2.,3.);
     const LOOK_AT: Point = Point::new(0., 0., 0.);
     const DEFOCUS_ANGLE: f64 = 0.;
     const UP: Point = Point::new(0., 1., 0.);
@@ -29,15 +29,16 @@ fn main() -> Result<(), std::io::Error> {
     welcome_message();
 
     // Textures
-    let earth_texture = Rc::new(ImageTexture::new("assets/earthmap.jpg").unwrap());
+    let noise_texture = Rc::new(NoiseTexture::new(4.));
 
     // Materials
-    let earth_surface = Rc::new(Lambertian::from_texture(earth_texture));
+    let noise_surface = Rc::new(Lambertian::from_texture(noise_texture));
 
     // World
     let mut world = HittableList::new();
-    world.add(Box::new(Sphere::new(Point::new(0., 0., 0.), 2., earth_surface)));
-    // let world = world.to_bvh();
+    world.add(Box::new(Sphere::new(Point::new(0., -1000., 0.), 1000., noise_surface.clone())));
+    world.add(Box::new(Sphere::new(Point::new(0., 2., 0.), 2., noise_surface)));
+    let world = world.to_bvh();
 
     // Image settings
     let image_info = ImageInfo::from_aspect_ratio(

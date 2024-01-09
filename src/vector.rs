@@ -28,6 +28,15 @@ impl Vec3 {
         }
     }
 
+    pub fn set_axis(&mut self, axis: usize, value: f64) {
+        match axis {
+            0 => self.x = value,
+            1 => self.y = value,
+            2 => self.z = value,
+            _ => panic!("Invalid axis"),
+        }
+    }
+
     pub fn x(&self) -> f64 {
         self.x
     }
@@ -81,6 +90,15 @@ impl Vec3 {
                 return vec;
             }
         }
+    }
+
+    pub fn random(min: f64, max: f64) -> Self {
+        let mut rng = rand::thread_rng();
+        Self::new(
+            rng.gen_range(min..=max),
+            rng.gen_range(min..=max),
+            rng.gen_range(min..=max),
+        )
     }
 
     pub fn random_in_disk() -> Self {

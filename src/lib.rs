@@ -9,3 +9,4 @@ pub mod image_info;
 pub mod material;
 pub mod texture;
 pub mod terminal;
+pub mod noise;
