@@ -18,6 +18,8 @@ pub struct Camera {
     vertical_fov: f64, // in radians
 
     image_info: ImageInfo,
+
+    background: Option<Color>,
     
     // viewport_height: f64,
     // viewport_width: f64,
@@ -45,6 +47,8 @@ impl Camera {
             camera_center: Point::zero(),
             vertical_fov: vfov,
             image_info,
+
+            background: None,
 
             viewport_u: Vec3::zero(), // Set in the call to set()
             viewport_v: Vec3::zero(), // Set in the call to set()
@@ -90,6 +94,10 @@ impl Camera {
 
         self.viewport_upper_left = self.camera_center - (self.focus_distance * w) - (self.viewport_u + self.viewport_v) / 2.;
         self.pixel00_loc = self.viewport_upper_left + (self.pixel_delta_u + self.pixel_delta_v) * 0.5; // Center of the first pixel
+    }
+
+    pub fn set_background(&mut self, color: Color) {
+        self.background = Some(color);
     }
 
     pub fn render(&mut self, world: &HittableList, writter: &mut dyn Writter) {
@@ -156,15 +164,21 @@ impl Camera {
         }
 
         if let Some(hit_record) = world.hit(ray, &Interval::positive()) {
+            let color_from_emission = hit_record.material.emitted(&hit_record.uv, &hit_record.point);
             if let Some((attenuation, scattered_ray)) = hit_record.material.scatter(ray, &hit_record) {
-                return attenuation * self.ray_color(&scattered_ray, world, depth - 1)
+                let color_from_scatter = attenuation * self.ray_color(&scattered_ray, world, depth - 1);
+                return color_from_emission + color_from_scatter;
             } 
-            return Color::black();
+            return color_from_emission;
         }
     
-        let unit_direction = ray.direction().normalized();
-        let a = 0.5 * (unit_direction.y() + 1.0);
-        
-        Color::white().lerp(&Color::new(0.5, 0.7, 1.0), a)
+        if let Some(color) = &self.background {
+            color.clone()
+        } else {
+            // Sky color
+            let unit_direction = ray.direction().normalized();
+            let a = 0.5 * (unit_direction.y() + 1.0);
+            Color::white().lerp(&Color::new(0.5, 0.7, 1.0), a)
+        }
     }
 }

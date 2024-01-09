@@ -3,7 +3,7 @@ use crate::interval::Interval;
 
 const COLOR_RANGE: Interval = Interval { min: 0., max: 1. };
 
-#[derive(Clone)]
+#[derive(Clone, Debug)]
 pub struct Color {
     pub r: f64,
     pub g: f64,

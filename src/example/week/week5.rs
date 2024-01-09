@@ -3,29 +3,25 @@ use raytracing::camera::Camera;
 use raytracing::material::*;
 use raytracing::writter::{Writter, PpmWritter};
 use raytracing::vector::{Point, Vec3};
-use raytracing::hittable::{HittableList, Sphere, Quad};
+use raytracing::color::Color;
+use raytracing::hittable::{HittableList, Quad};
 use raytracing::image_info::ImageInfo;
 use raytracing::terminal::{Terminal, Position};
-use raytracing::texture::NoiseTexture;
-use raytracing::color::Color;
 
 use std::rc::Rc;
 
 fn main() -> Result<(), std::io::Error> {
     // Constants
-    const FILEPATH: &str = "output/test.ppm";
+    const FILEPATH: &str = "output/week/week5.ppm";
     const WIDTH: usize = 400;
-    const ASPECT_RATIO: f64 = 16.0 / 9.0;
+    const ASPECT_RATIO: f64 = 1.;
 
-    const SAMPLES_PER_PIXEL: usize = 1000;
+    const SAMPLES_PER_PIXEL: usize = 100;
     const MAX_DEPTH: usize = 50;
-
-    const LIGHT_COLOR: Color = Color { r: 5., g: 5., b: 5. };
-    const BACKGROUND_COLOR: Color = Color { r: 0., g: 0., b: 0. };
     
-    const VERTICAL_FOV: f64 = 20.0;
-    const LOOK_FROM: Point = Point::new(26.,3.,6.);
-    const LOOK_AT: Point = Point::new(0., 2., 0.);
+    const VERTICAL_FOV: f64 = 80.0;
+    const LOOK_FROM: Point = Point::new(0., 0., 9.);
+    const LOOK_AT: Point = Point::new(0., 0., 0.);
     const DEFOCUS_ANGLE: f64 = 0.;
     const UP: Point = Point::new(0., 1., 0.);
     let focus_distance = (LOOK_FROM - LOOK_AT).length();
@@ -33,19 +29,21 @@ fn main() -> Result<(), std::io::Error> {
     welcome_message();
 
     // Textures
-    let noise_texture = Rc::new(NoiseTexture::new(4.));
-    let diff_light = Rc::new(DiffuseLight::from_color(LIGHT_COLOR));
 
     // Materials
-    let noise_surface = Rc::new(Lambertian::from_texture(noise_texture));
+    let left_red     = Rc::new(Lambertian::new(Color::new(1.0, 0.2, 0.2)));
+    let back_green   = Rc::new(Lambertian::new(Color::new(0.2, 1.0, 0.2)));
+    let right_blue   = Rc::new(Lambertian::new(Color::new(0.2, 0.2, 1.0)));
+    let upper_orange = Rc::new(Lambertian::new(Color::new(1.0, 0.5, 0.0)));
+    let lower_teal   = Rc::new(Lambertian::new(Color::new(0.2, 0.8, 0.8)));
 
     // World
     let mut world = HittableList::new();
-    world.add(Box::new(Sphere::new(Point::new(0., -1000., 0.), 1000., noise_surface.clone())));
-    world.add(Box::new(Sphere::new(Point::new(0., 2., 0.), 2., noise_surface)));
-
-    world.add(Box::new(Quad::new(Point::new(3., 1., -2.), Vec3::new(2., 0., 0.), Vec3::new(0., 2., 0.), diff_light.clone())));
-    world.add(Box::new(Sphere::new(Point::new(0., 7., 0.), 2., diff_light)));
+    world.add(Box::new(Quad::new(Point::new(-3.,-2., 5.), Vec3::new(0., 0.,-4.), Vec3::new(0., 4., 0.), left_red)));
+    world.add(Box::new(Quad::new(Point::new(-2.,-2., 0.), Vec3::new(4., 0., 0.), Vec3::new(0., 4., 0.), back_green)));
+    world.add(Box::new(Quad::new(Point::new( 3.,-2., 1.), Vec3::new(0., 0., 4.), Vec3::new(0., 4., 0.), right_blue)));
+    world.add(Box::new(Quad::new(Point::new(-2., 3., 1.), Vec3::new(4., 0., 0.), Vec3::new(0., 0., 4.), upper_orange)));
+    world.add(Box::new(Quad::new(Point::new(-2.,-3., 5.), Vec3::new(4., 0., 0.), Vec3::new(0., 0.,-4.), lower_teal)));
     let world = world.to_bvh();
 
     // Image settings
@@ -60,7 +58,6 @@ fn main() -> Result<(), std::io::Error> {
     // Camera 
     let mut camera = Camera::new(VERTICAL_FOV, image_info.clone());
     camera.set(LOOK_FROM, LOOK_AT, focus_distance, DEFOCUS_ANGLE, UP);
-    camera.set_background(BACKGROUND_COLOR);
 
     // Output settings
     let mut writter: Box<dyn Writter> = Box::new(PpmWritter::new(image_info.clone()));
