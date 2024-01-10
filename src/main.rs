@@ -3,29 +3,29 @@ use raytracing::camera::Camera;
 use raytracing::material::*;
 use raytracing::writter::{Writter, PpmWritter};
 use raytracing::vector::{Point, Vec3};
-use raytracing::hittable::{HittableList, Sphere, Quad};
+use raytracing::hittable::{HittableList, Quad, yaw_rotated_cuboid};
 use raytracing::image_info::ImageInfo;
 use raytracing::terminal::{Terminal, Position};
-use raytracing::texture::NoiseTexture;
 use raytracing::color::Color;
 
-use std::rc::Rc;
-
 fn main() -> Result<(), std::io::Error> {
+    cornell_box()
+}
+
+pub fn cornell_box() -> Result<(), std::io::Error> {
     // Constants
     const FILEPATH: &str = "output/test.ppm";
-    const WIDTH: usize = 400;
-    const ASPECT_RATIO: f64 = 16.0 / 9.0;
+    const WIDTH: usize = 600;
+    const ASPECT_RATIO: f64 = 1.;
 
-    const SAMPLES_PER_PIXEL: usize = 1000;
+    const SAMPLES_PER_PIXEL: usize = 200;
     const MAX_DEPTH: usize = 50;
 
-    const LIGHT_COLOR: Color = Color { r: 5., g: 5., b: 5. };
     const BACKGROUND_COLOR: Color = Color { r: 0., g: 0., b: 0. };
     
-    const VERTICAL_FOV: f64 = 20.0;
-    const LOOK_FROM: Point = Point::new(26.,3.,6.);
-    const LOOK_AT: Point = Point::new(0., 2., 0.);
+    const VERTICAL_FOV: f64 = 40.0;
+    const LOOK_FROM: Point = Point::new(278., 278., -800.);
+    const LOOK_AT: Point = Point::new(278., 278., 0.);
     const DEFOCUS_ANGLE: f64 = 0.;
     const UP: Point = Point::new(0., 1., 0.);
     let focus_distance = (LOOK_FROM - LOOK_AT).length();
@@ -33,19 +33,24 @@ fn main() -> Result<(), std::io::Error> {
     welcome_message();
 
     // Textures
-    let noise_texture = Rc::new(NoiseTexture::new(4.));
-    let diff_light = Rc::new(DiffuseLight::from_color(LIGHT_COLOR));
 
     // Materials
-    let noise_surface = Rc::new(Lambertian::from_texture(noise_texture));
+    let red = Lambertian::new(Color::new(0.65, 0.05, 0.05));
+    let green = Lambertian::new(Color::new(0.12, 0.45, 0.15));
+    let white = Lambertian::new(Color::new(0.73, 0.73, 0.73));
+    let light = DiffuseLight::white(15.);
 
     // World
     let mut world = HittableList::new();
-    world.add(Box::new(Sphere::new(Point::new(0., -1000., 0.), 1000., noise_surface.clone())));
-    world.add(Box::new(Sphere::new(Point::new(0., 2., 0.), 2., noise_surface)));
-
-    world.add(Box::new(Quad::new(Point::new(3., 1., -2.), Vec3::new(2., 0., 0.), Vec3::new(0., 2., 0.), diff_light.clone())));
-    world.add(Box::new(Sphere::new(Point::new(0., 7., 0.), 2., diff_light)));
+    world += Quad::new(Point::new(555.,0.,0.), Vec3::new(0.,555.,0.), Vec3::new(0.,0.,555.), green);
+    world += Quad::new(Point::new(0.,0.,0.), Vec3::new(0.,555.,0.), Vec3::new(0.,0.,555.), red);
+    world += Quad::new(Point::new(343., 554., 332.), Vec3::new(-130.,0.,0.), Vec3::new(0.,0.,-105.), light);
+    world += Quad::new(Point::new(0.,0.,0.), Vec3::new(555.,0.,0.), Vec3::new(0.,0.,555.), white.clone());
+    world += Quad::new(Point::new(555., 555., 555.), Vec3::new(-555., 0., 0.), Vec3::new(0., 0., -555.), white.clone());
+    world += Quad::new(Point::new(0., 0., 555.), Vec3::new(555., 0., 0.), Vec3::new(0., 555., 0.), white.clone());
+    
+    world += yaw_rotated_cuboid(Point::new(212.5, 82.5, 147.5), Vec3::new(165., 165., 165.), -18., white.clone());
+    world += yaw_rotated_cuboid(Point::new(347.5, 165.0, 377.5), Vec3::new(165., 330., 165.), 15., white.clone());
     let world = world.to_bvh();
 
     // Image settings
