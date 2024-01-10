@@ -34,11 +34,11 @@ pub fn camera_blur() -> Result<(), std::io::Error> {
 
     // Objects
     let mut world = HittableList::new();
-    world.add(Sphere::boxed(Point::new(0., -100.5, -1.), 100., material_ground.clone()));
-    world.add(Sphere::boxed(Point::new(0., 0., -1.), 0.5, material_center.clone()));
-    world.add(Sphere::boxed(Point::new(-1., 0., -1.), 0.5, material_left.clone()));
-    world.add(Sphere::boxed(Point::new(-1., 0., -1.), -0.4, material_left.clone()));
-    world.add(Sphere::boxed(Point::new(1., 0., -1.), 0.5, material_right.clone()));
+    world.add(Sphere::new(Point::new(0., -100.5, -1.), 100., material_ground.clone()));
+    world.add(Sphere::new(Point::new(0., 0., -1.), 0.5, material_center.clone()));
+    world.add(Sphere::new(Point::new(-1., 0., -1.), 0.5, material_left.clone()));
+    world.add(Sphere::new(Point::new(-1., 0., -1.), -0.4, material_left.clone()));
+    world.add(Sphere::new(Point::new(1., 0., -1.), 0.5, material_right.clone()));
     
     // Image settings
     let image_info = ImageInfo::from_aspect_ratio(

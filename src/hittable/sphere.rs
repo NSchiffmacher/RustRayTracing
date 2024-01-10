@@ -17,41 +17,33 @@ pub struct Sphere {
 }
 
 impl Sphere {
-    pub fn new(center: Point, radius: f64, material: Rc<dyn Material>) -> Self {
+    pub fn new(center: Point, radius: f64, material: Rc<dyn Material>) -> Box<dyn Hittable> {
         let r = Vec3::new(radius, radius, radius);
         let bbox = AABB::from_points(center - r, center + r);
-        Self {
+        Box::new(Self {
             initial_center: center,
             center_vec: Vec3::zero(),
             is_moving: false,
             radius,
             material,
             bbox,
-        }
+        })
     }
 
-    pub fn new_moving(initial_center: Point, final_center: Point, radius: f64, material: Rc<dyn Material>) -> Self {
+    pub fn new_moving(initial_center: Point, final_center: Point, radius: f64, material: Rc<dyn Material>) -> Box<dyn Hittable> {
         let r = Vec3::new(radius, radius, radius);
         let box1 = AABB::from_points(initial_center - r, initial_center + r);
         let box2 = AABB::from_points(final_center - r, final_center + r);
         let bbox = AABB::surrounding_box(&box1, &box2);
 
-        Self {
+        Box::new(Self {
             initial_center,
             center_vec: final_center - initial_center,
             is_moving: true,
             radius,
             material,
             bbox,
-        }
-    }
-
-    pub fn boxed(center: Point, radius: f64, material: Rc<dyn Material>) -> Box<dyn Hittable> {
-        Box::new(Self::new(center, radius, material))
-    }
-
-    pub fn boxed_moving(initial_center: Point, final_center: Point, radius: f64, material: Rc<dyn Material>) -> Box<dyn Hittable> {
-        Box::new(Self::new_moving(initial_center, final_center, radius, material))
+        })
     }
 
     pub fn center(&self, time: f64) -> Point {

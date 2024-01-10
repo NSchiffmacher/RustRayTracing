@@ -40,11 +40,11 @@ pub fn quads() -> Result<(), std::io::Error> {
 
     // World
     let mut world = HittableList::new();
-    world += Quad::boxed(Point::new(-3.,-2., 5.), Vec3::new(0., 0.,-4.), Vec3::new(0., 4., 0.), left_red);
-    world += Quad::boxed(Point::new(-2.,-2., 0.), Vec3::new(4., 0., 0.), Vec3::new(0., 4., 0.), back_green);
-    world += Quad::boxed(Point::new( 3.,-2., 1.), Vec3::new(0., 0., 4.), Vec3::new(0., 4., 0.), right_blue);
-    world += Quad::boxed(Point::new(-2., 3., 1.), Vec3::new(4., 0., 0.), Vec3::new(0., 0., 4.), upper_orange);
-    world += Quad::boxed(Point::new(-2.,-3., 5.), Vec3::new(4., 0., 0.), Vec3::new(0., 0.,-4.), lower_teal);
+    world += Quad::new(Point::new(-3.,-2., 5.), Vec3::new(0., 0.,-4.), Vec3::new(0., 4., 0.), left_red);
+    world += Quad::new(Point::new(-2.,-2., 0.), Vec3::new(4., 0., 0.), Vec3::new(0., 4., 0.), back_green);
+    world += Quad::new(Point::new( 3.,-2., 1.), Vec3::new(0., 0., 4.), Vec3::new(0., 4., 0.), right_blue);
+    world += Quad::new(Point::new(-2., 3., 1.), Vec3::new(4., 0., 0.), Vec3::new(0., 0., 4.), upper_orange);
+    world += Quad::new(Point::new(-2.,-3., 5.), Vec3::new(4., 0., 0.), Vec3::new(0., 0.,-4.), lower_teal);
     let world = world.to_bvh();
 
     // Image settings

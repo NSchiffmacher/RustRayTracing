@@ -37,8 +37,8 @@ pub fn perlin_noise() -> Result<(), std::io::Error> {
 
     // World
     let mut world = HittableList::new();
-    world.add(Box::new(Sphere::new(Point::new(0., -1000., 0.), 1000., noise_surface.clone())));
-    world.add(Box::new(Sphere::new(Point::new(0., 2., 0.), 2., noise_surface)));
+    world.add(Sphere::new(Point::new(0., -1000., 0.), 1000., noise_surface.clone()));
+    world.add(Sphere::new(Point::new(0., 2., 0.), 2., noise_surface));
     let world = world.to_bvh();
 
     // Image settings

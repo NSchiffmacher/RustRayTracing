@@ -19,7 +19,7 @@ pub struct Quad {
 }
 
 impl Quad {
-    pub fn new(q: Point, u: Vec3, v: Vec3, material: Rc<dyn Material>) -> Self {
+    pub fn new(q: Point, u: Vec3, v: Vec3, material: Rc<dyn Material>) -> Box<dyn Hittable> {
         let bbox = AABB::from_points(q, q + u + v);
 
         let normal = u.cross(&v);
@@ -28,11 +28,7 @@ impl Quad {
         let normal = normal.normalized();
         let d = normal.dot(&q);
 
-        Self { q, u, v, w, material, bbox, normal, d }
-    }
-
-    pub fn boxed(q: Point, u: Vec3, v: Vec3, material: Rc<dyn Material>) -> Box<dyn Hittable> {
-        Box::new(Self::new(q, u, v, material))
+        Box::new(Self { q, u, v, w, material, bbox, normal, d })
     }
 }
 

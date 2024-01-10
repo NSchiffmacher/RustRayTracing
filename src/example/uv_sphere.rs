@@ -58,8 +58,8 @@ pub fn uv_sphere() -> Result<(), std::io::Error> {
 
     // Objects
     let mut world = HittableList::new();
-    world.add(Sphere::boxed(Point::new(0., 0., -1.), 0.5, lambertian.clone()));
-    world.add(Sphere::boxed(Point::new(0., -100.5, -1.), 100., lambertian.clone()));
+    world.add(Sphere::new(Point::new(0., 0., -1.), 0.5, lambertian.clone()));
+    world.add(Sphere::new(Point::new(0., -100.5, -1.), 100., lambertian.clone()));
 
 
     // Rendering

@@ -37,7 +37,7 @@ pub fn earth() -> Result<(), std::io::Error> {
 
     // World
     let mut world = HittableList::new();
-    world.add(Box::new(Sphere::new(Point::new(0., 0., 0.), 2., earth_surface)));
+    world.add(Sphere::new(Point::new(0., 0., 0.), 2., earth_surface));
     // let world = world.to_bvh();
 
     // Image settings

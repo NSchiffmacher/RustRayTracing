@@ -43,11 +43,11 @@ pub fn diffuse_lights() -> Result<(), std::io::Error> {
 
     // World
     let mut world = HittableList::new();
-    world.add(Box::new(Sphere::new(Point::new(0., -1000., 0.), 1000., noise_surface.clone())));
-    world.add(Box::new(Sphere::new(Point::new(0., 2., 0.), 2., noise_surface)));
+    world.add(Sphere::new(Point::new(0., -1000., 0.), 1000., noise_surface.clone()));
+    world.add(Sphere::new(Point::new(0., 2., 0.), 2., noise_surface));
 
-    world.add(Box::new(Quad::new(Point::new(3., 1., -2.), Vec3::new(2., 0., 0.), Vec3::new(0., 2., 0.), diff_light.clone())));
-    world.add(Box::new(Sphere::new(Point::new(0., 7., 0.), 2., diff_light)));
+    world.add(Quad::new(Point::new(3., 1., -2.), Vec3::new(2., 0., 0.), Vec3::new(0., 2., 0.), diff_light.clone()));
+    world.add(Sphere::new(Point::new(0., 7., 0.), 2., diff_light));
     let world = world.to_bvh();
 
     // Image settings

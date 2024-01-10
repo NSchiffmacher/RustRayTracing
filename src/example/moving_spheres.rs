@@ -33,7 +33,7 @@ pub fn moving_spheres() -> Result<(), std::io::Error> {
     let mut world = HittableList::new();
     let mut rng = rand::thread_rng();
 
-    world.add(Sphere::boxed(Point::new(0., -1000., 0.), 1000., ground_material));
+    world.add(Sphere::new(Point::new(0., -1000., 0.), 1000., ground_material));
 
     for a in -11..10 {
         for b in -11..10 {
@@ -64,22 +64,22 @@ pub fn moving_spheres() -> Result<(), std::io::Error> {
                 let moving_proba = rng.gen_range(0f64..1f64);
                 if moving_proba < 0.2 {
                     let final_center = center + Point::new(0., rng.gen_range(0f64..0.5), 0.);
-                    world.add(Sphere::boxed_moving(center, final_center, 0.2, material))
+                    world.add(Sphere::new_moving(center, final_center, 0.2, material))
                 } else {
-                    world.add(Sphere::boxed(center, 0.2, material));
+                    world.add(Sphere::new(center, 0.2, material));
                 }
             }
         }
     }
 
     let mat1 = Dielectric::new(1.5);
-    world.add(Sphere::boxed(Point::new(0., 1., 0.), 1., mat1));
+    world.add(Sphere::new(Point::new(0., 1., 0.), 1., mat1));
 
     let mat2 = Lambertian::new(Color::new(0.4, 0.2, 0.1));
-    world.add(Sphere::boxed(Point::new(-4., 1., 0.), 1., mat2));
+    world.add(Sphere::new(Point::new(-4., 1., 0.), 1., mat2));
 
     let mat3 = Metal::new(Color::new(0.7, 0.6, 0.5), 0.);
-    world.add(Sphere::boxed(Point::new(4., 1., 0.), 1., mat3));
+    world.add(Sphere::new(Point::new(4., 1., 0.), 1., mat3));
 
     let world = world.to_bvh();
     

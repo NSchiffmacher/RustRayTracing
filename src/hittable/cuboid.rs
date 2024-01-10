@@ -13,12 +13,12 @@ pub fn cuboid(center_pos: Point, u: Vec3, v: Vec3, w: Vec3, material: Rc<dyn Mat
     let hv = v / 2.;
     let hw = w / 2.;
 
-    objects.push(Box::new(Quad::new(center_pos - hu - hv - hw, u, w, material.clone()))); // front
-    objects.push(Box::new(Quad::new(center_pos - hu + hv - hw, u, w, material.clone()))); // back
-    objects.push(Box::new(Quad::new(center_pos - hu - hv - hw, w, v, material.clone()))); // left
-    objects.push(Box::new(Quad::new(center_pos + hu - hv - hw, w, v, material.clone()))); // right
-    objects.push(Box::new(Quad::new(center_pos - hu - hv + hw, u, v, material.clone()))); // top
-    objects.push(Box::new(Quad::new(center_pos - hu - hv - hw, u, v, material.clone()))); // bottom
+    objects.push(Quad::new(center_pos - hu - hv - hw, u, w, material.clone())); // front
+    objects.push(Quad::new(center_pos - hu + hv - hw, u, w, material.clone())); // back
+    objects.push(Quad::new(center_pos - hu - hv - hw, w, v, material.clone())); // left
+    objects.push(Quad::new(center_pos + hu - hv - hw, w, v, material.clone())); // right
+    objects.push(Quad::new(center_pos - hu - hv + hw, u, v, material.clone())); // top
+    objects.push(Quad::new(center_pos - hu - hv - hw, u, v, material.clone())); // bottom
 
     objects
 }

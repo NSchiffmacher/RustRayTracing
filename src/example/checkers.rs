@@ -41,8 +41,8 @@ pub fn checkers() -> Result<(), std::io::Error> {
 
     // World
     let mut world = HittableList::new();
-    world.add(Box::new(Sphere::new(Point::new(0., -10., 0.), 10., checker_mat.clone())));
-    world.add(Box::new(Sphere::new(Point::new(0., 10., 0.), 10., checker_mat.clone())));
+    world.add(Sphere::new(Point::new(0., -10., 0.), 10., checker_mat.clone()));
+    world.add(Sphere::new(Point::new(0., 10., 0.), 10., checker_mat.clone()));
 
     let world = world.to_bvh();
 
