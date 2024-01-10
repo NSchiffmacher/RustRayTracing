@@ -5,6 +5,8 @@ use crate::texture::{Texture, Uv};
 use image::io::Reader as ImageReader;
 use image::{DynamicImage, GenericImageView};
 
+use std::rc::Rc;
+
 pub struct ImageTexture {
     image: DynamicImage,
     width_f: f64,
@@ -12,13 +14,13 @@ pub struct ImageTexture {
 }
 
 impl ImageTexture {
-    pub fn new(path: &str) -> Result<Self, image::ImageError> {
+    pub fn new(path: &str) -> Result<Rc<dyn Texture>, image::ImageError> {
         let image = ImageReader::open(path)?.decode()?;
-        Ok(Self {
+        Ok(Rc::new(Self {
             width_f: image.width() as f64,
             height_f: image.height() as f64,
             image,
-        })
+        }))
     }
 }
 

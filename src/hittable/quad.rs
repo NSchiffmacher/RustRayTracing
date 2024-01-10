@@ -30,6 +30,10 @@ impl Quad {
 
         Self { q, u, v, w, material, bbox, normal, d }
     }
+
+    pub fn boxed(q: Point, u: Vec3, v: Vec3, material: Rc<dyn Material>) -> Box<dyn Hittable> {
+        Box::new(Self::new(q, u, v, material))
+    }
 }
 
 impl Hittable for Quad {

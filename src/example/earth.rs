@@ -7,8 +7,6 @@ use raytracing::image_info::ImageInfo;
 use raytracing::terminal::{Terminal, Position};
 use raytracing::texture::ImageTexture;
 
-use std::rc::Rc;
-
 fn main() -> Result<(), std::io::Error> {
     earth()
 }
@@ -32,10 +30,10 @@ pub fn earth() -> Result<(), std::io::Error> {
     welcome_message();
 
     // Textures
-    let earth_texture = Rc::new(ImageTexture::new("assets/earthmap.jpg").unwrap());
+    let earth_texture = ImageTexture::new("assets/earthmap.jpg").unwrap();
 
     // Materials
-    let earth_surface = Rc::new(Lambertian::from_texture(earth_texture));
+    let earth_surface = Lambertian::from_texture(earth_texture);
 
     // World
     let mut world = HittableList::new();

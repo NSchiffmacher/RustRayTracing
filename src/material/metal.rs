@@ -4,17 +4,19 @@ use crate::hittable::HitRecord;
 use crate::color::Color;
 use crate::vector::Vec3;
 
+use std::rc::Rc;
+
 pub struct Metal {
     albedo: Color,
     fuzz_factor: f64,
 }
 
 impl Metal {
-    pub fn new(albedo: Color, fuzz_factor: f64) -> Self {
-        Self {
+    pub fn new(albedo: Color, fuzz_factor: f64) -> Rc<dyn Material> {
+        Rc::new(Self {
             albedo,
             fuzz_factor: 1f64.min(fuzz_factor),
-        }
+        })
     }
 }
 

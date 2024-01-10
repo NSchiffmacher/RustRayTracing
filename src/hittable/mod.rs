@@ -2,6 +2,7 @@ use crate::interval::Interval;
 use crate::ray::Ray;
 
 mod aabb;
+mod cuboid;
 mod bvh;
 mod sphere;
 mod quad;
@@ -9,6 +10,7 @@ mod hittable_list;
 mod hit_record;
 
 pub use aabb::AABB;
+pub use cuboid::*;
 pub use bvh::BvhTree;
 pub use sphere::Sphere;
 pub use quad::Quad;

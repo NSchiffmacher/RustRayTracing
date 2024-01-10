@@ -12,16 +12,16 @@ pub struct DiffuseLight {
 }
 
 impl DiffuseLight {
-    pub fn new(emit: Rc<dyn Texture>) -> Self {
-        Self { emit }
+    pub fn new(emit: Rc<dyn Texture>) -> Rc<dyn Material> {
+        Rc::new(Self { emit })
     }
 
-    pub fn from_color(color: Color) -> Self {
-        Self { emit: Rc::new(SolidColor::new(color)) }
+    pub fn from_color(color: Color) -> Rc<dyn Material> {
+        Rc::new(Self { emit: SolidColor::new(color) })
     }
 
-    pub fn white() -> Self {
-        Self::from_color(Color::white())
+    pub fn white(intensity: f64) -> Rc<dyn Material> {
+        Self::from_color(Color::white() * intensity)
     }
 }
 

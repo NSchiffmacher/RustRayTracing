@@ -12,16 +12,16 @@ pub struct Lambertian {
 }
 
 impl Lambertian {
-    pub fn new(albedo: Color) -> Self {
-        Self {
-            albedo: Rc::new(SolidColor::new(albedo)),
-        }
+    pub fn new(albedo: Color) -> Rc<dyn Material> {
+        Rc::new(Self {
+            albedo: SolidColor::new(albedo),
+        })
     }
 
-    pub fn from_texture(albedo: Rc<dyn Texture>) -> Self {
-        Self {
+    pub fn from_texture(albedo: Rc<dyn Texture>) -> Rc<dyn Material> {
+        Rc::new(Self {
             albedo,
-        }
+        })
     }
 }
 

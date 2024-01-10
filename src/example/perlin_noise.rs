@@ -7,8 +7,6 @@ use raytracing::image_info::ImageInfo;
 use raytracing::terminal::{Terminal, Position};
 use raytracing::texture::NoiseTexture;
 
-use std::rc::Rc;
-
 fn main() -> Result<(), std::io::Error> {
     perlin_noise()
 }
@@ -32,10 +30,10 @@ pub fn perlin_noise() -> Result<(), std::io::Error> {
     welcome_message();
 
     // Textures
-    let noise_texture = Rc::new(NoiseTexture::new(4.));
+    let noise_texture = NoiseTexture::new(4.);
 
     // Materials
-    let noise_surface = Rc::new(Lambertian::from_texture(noise_texture));
+    let noise_surface = Lambertian::from_texture(noise_texture);
 
     // World
     let mut world = HittableList::new();

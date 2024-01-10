@@ -46,11 +46,11 @@ impl Sphere {
         }
     }
 
-    pub fn boxed(center: Point, radius: f64, material: Rc<dyn Material>) -> Box<Self> {
+    pub fn boxed(center: Point, radius: f64, material: Rc<dyn Material>) -> Box<dyn Hittable> {
         Box::new(Self::new(center, radius, material))
     }
 
-    pub fn boxed_moving(initial_center: Point, final_center: Point, radius: f64, material: Rc<dyn Material>) -> Box<Self> {
+    pub fn boxed_moving(initial_center: Point, final_center: Point, radius: f64, material: Rc<dyn Material>) -> Box<dyn Hittable> {
         Box::new(Self::new_moving(initial_center, final_center, radius, material))
     }
 

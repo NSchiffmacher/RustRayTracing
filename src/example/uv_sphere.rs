@@ -7,8 +7,6 @@ use raytracing::interval::Interval;
 use raytracing::image_info::ImageInfo;
 use raytracing::material::Lambertian;
 
-use std::rc::Rc;
-
 fn main() -> Result<(), std::io::Error> {
     uv_sphere()
 }
@@ -56,7 +54,7 @@ pub fn uv_sphere() -> Result<(), std::io::Error> {
     let pixel00_loc = viewport_upper_left + (pixel_delta_u + pixel_delta_v) * 0.5; // Center of the first pixel
 
     // Materials
-    let lambertian = Rc::new(Lambertian::new(Color::new(0.7, 0.7, 0.7)));
+    let lambertian = Lambertian::new(Color::new(0.7, 0.7, 0.7));
 
     // Objects
     let mut world = HittableList::new();

@@ -4,16 +4,17 @@ use crate::hittable::HitRecord;
 use crate::color::Color;
 
 use rand::Rng;
+use std::rc::Rc;
 
 pub struct Dielectric {
     refraction_index: f64,
 }
 
 impl Dielectric {
-    pub fn new(refraction_index: f64) -> Self {
-        Self {
+    pub fn new(refraction_index: f64) -> Rc<dyn Material> {
+        Rc::new(Self {
             refraction_index,
-        }
+        })
     }
 
     fn reflectance(cos: f64, ref_idx: f64) -> f64 {

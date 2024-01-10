@@ -7,8 +7,6 @@ use raytracing::hittable::{HittableList, Quad};
 use raytracing::image_info::ImageInfo;
 use raytracing::terminal::{Terminal, Position};
 
-use std::rc::Rc;
-
 fn main() -> Result<(), std::io::Error> {
     quads()
 }
@@ -34,19 +32,19 @@ pub fn quads() -> Result<(), std::io::Error> {
     // Textures
 
     // Materials
-    let left_red     = Rc::new(Lambertian::new(Color::new(1.0, 0.2, 0.2)));
-    let back_green   = Rc::new(Lambertian::new(Color::new(0.2, 1.0, 0.2)));
-    let right_blue   = Rc::new(Lambertian::new(Color::new(0.2, 0.2, 1.0)));
-    let upper_orange = Rc::new(Lambertian::new(Color::new(1.0, 0.5, 0.0)));
-    let lower_teal   = Rc::new(Lambertian::new(Color::new(0.2, 0.8, 0.8)));
+    let left_red     = Lambertian::new(Color::new(1.0, 0.2, 0.2));
+    let back_green   = Lambertian::new(Color::new(0.2, 1.0, 0.2));
+    let right_blue   = Lambertian::new(Color::new(0.2, 0.2, 1.0));
+    let upper_orange = Lambertian::new(Color::new(1.0, 0.5, 0.0));
+    let lower_teal   = Lambertian::new(Color::new(0.2, 0.8, 0.8));
 
     // World
     let mut world = HittableList::new();
-    world.add(Box::new(Quad::new(Point::new(-3.,-2., 5.), Vec3::new(0., 0.,-4.), Vec3::new(0., 4., 0.), left_red)));
-    world.add(Box::new(Quad::new(Point::new(-2.,-2., 0.), Vec3::new(4., 0., 0.), Vec3::new(0., 4., 0.), back_green)));
-    world.add(Box::new(Quad::new(Point::new( 3.,-2., 1.), Vec3::new(0., 0., 4.), Vec3::new(0., 4., 0.), right_blue)));
-    world.add(Box::new(Quad::new(Point::new(-2., 3., 1.), Vec3::new(4., 0., 0.), Vec3::new(0., 0., 4.), upper_orange)));
-    world.add(Box::new(Quad::new(Point::new(-2.,-3., 5.), Vec3::new(4., 0., 0.), Vec3::new(0., 0.,-4.), lower_teal)));
+    world += Quad::boxed(Point::new(-3.,-2., 5.), Vec3::new(0., 0.,-4.), Vec3::new(0., 4., 0.), left_red);
+    world += Quad::boxed(Point::new(-2.,-2., 0.), Vec3::new(4., 0., 0.), Vec3::new(0., 4., 0.), back_green);
+    world += Quad::boxed(Point::new( 3.,-2., 1.), Vec3::new(0., 0., 4.), Vec3::new(0., 4., 0.), right_blue);
+    world += Quad::boxed(Point::new(-2., 3., 1.), Vec3::new(4., 0., 0.), Vec3::new(0., 0., 4.), upper_orange);
+    world += Quad::boxed(Point::new(-2.,-3., 5.), Vec3::new(4., 0., 0.), Vec3::new(0., 0.,-4.), lower_teal);
     let world = world.to_bvh();
 
     // Image settings

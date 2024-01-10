@@ -7,49 +7,40 @@ default-run = "raytracing"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [[example]]
-name = "weekend1"
-path = "src/example/weekend/weekend1.rs"
+name = "camera_blur"
+path = "src/example/camera_blur.rs"
 
 [[example]]
-name = "weekend2"
-path = "src/example/weekend/weekend2.rs"
+name = "checkers"
+path = "src/example/checkers.rs"
 
 [[example]]
-name = "weekend3"
-path = "src/example/weekend/weekend3.rs"
+name = "earth"
+path = "src/example/earth.rs"
 
 [[example]]
-name = "weekend4"
-path = "src/example/weekend/weekend4.rs"
+name = "materials"
+path = "src/example/materials.rs"
 
 [[example]]
-name = "weekend5"
-path = "src/example/weekend/weekend5.rs"
+name = "moving_spheres"
+path = "src/example/moving_spheres.rs"
 
 [[example]]
-name = "weekend"
-path = "src/example/weekend/weekend_final.rs"
+name = "perlin_noise"
+path = "src/example/perlin_noise.rs"
 
 [[example]]
-name = "week1"
-path = "src/example/week/week1.rs"
+name = "quads"
+path = "src/example/quads.rs"
 
 [[example]]
-name = "week2"
-path = "src/example/week/week2.rs"
+name = "uv_sphere"
+path = "src/example/uv_sphere.rs"
 
 [[example]]
-name = "week3"
-path = "src/example/week/week3.rs"
-
-[[example]]
-name = "week4"
-path = "src/example/week/week4.rs"
-
-[[example]]
-name = "week5"
-path = "src/example/week/week5.rs"
-
+name = "diffuse_lights"
+path = "src/example/diffuse_lights.rs"
 
 [dependencies]
 image = "0.24.7"

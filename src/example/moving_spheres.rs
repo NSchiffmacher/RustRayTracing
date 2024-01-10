@@ -5,9 +5,9 @@ use raytracing::writter::{Writter, PpmWritter};
 use raytracing::vector::Point;
 use raytracing::hittable::{HittableList, Sphere};
 use raytracing::image_info::ImageInfo;
+use rand::Rng;
 
 use std::rc::Rc;
-use rand::Rng;
 
 fn main() -> Result<(), std::io::Error> {
     moving_spheres()
@@ -29,7 +29,7 @@ pub fn moving_spheres() -> Result<(), std::io::Error> {
     const FOCUS_DISTANCE: f64 = 10.0;
     const UP: Point = Point::new(0., 1., 0.);
 
-    let ground_material = Rc::new(Lambertian::new(Color::new(0.5, 0.5, 0.5)));
+    let ground_material = Lambertian::new(Color::new(0.5, 0.5, 0.5));
     let mut world = HittableList::new();
     let mut rng = rand::thread_rng();
 
@@ -50,15 +50,15 @@ pub fn moving_spheres() -> Result<(), std::io::Error> {
                     let color_a = Color::new(rng.gen_range(0f64..1f64), rng.gen_range(0f64..1f64), rng.gen_range(0f64..1f64));
                     let color_b = Color::new(rng.gen_range(0f64..1f64), rng.gen_range(0f64..1f64), rng.gen_range(0f64..1f64));
                     let albedo = color_a * color_b;
-                    Rc::new(Lambertian::new(albedo))
+                    Lambertian::new(albedo)
                 } else if choose_mat < 0.95 {
                     // metal
                     let albedo = Color::new(rng.gen_range(0.5..1f64), rng.gen_range(0.5..1f64), rng.gen_range(0.5..1f64));
                     let fuzz = rng.gen_range(0f64..0.5);
-                    Rc::new(Metal::new(albedo, fuzz))
+                    Metal::new(albedo, fuzz)
                 } else {
                     // glass
-                    Rc::new(Dielectric::new(1.5))
+                    Dielectric::new(1.5)
                 };
 
                 let moving_proba = rng.gen_range(0f64..1f64);
@@ -72,13 +72,13 @@ pub fn moving_spheres() -> Result<(), std::io::Error> {
         }
     }
 
-    let mat1 = Rc::new(Dielectric::new(1.5));
+    let mat1 = Dielectric::new(1.5);
     world.add(Sphere::boxed(Point::new(0., 1., 0.), 1., mat1));
 
-    let mat2 = Rc::new(Lambertian::new(Color::new(0.4, 0.2, 0.1)));
+    let mat2 = Lambertian::new(Color::new(0.4, 0.2, 0.1));
     world.add(Sphere::boxed(Point::new(-4., 1., 0.), 1., mat2));
 
-    let mat3 = Rc::new(Metal::new(Color::new(0.7, 0.6, 0.5), 0.));
+    let mat3 = Metal::new(Color::new(0.7, 0.6, 0.5), 0.);
     world.add(Sphere::boxed(Point::new(4., 1., 0.), 1., mat3));
 
     let world = world.to_bvh();

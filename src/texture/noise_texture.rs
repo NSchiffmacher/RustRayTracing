@@ -3,17 +3,19 @@ use crate::vector::Vec3;
 use crate::texture::{Texture, Uv};
 use crate::noise::Perlin;
 
+use std::rc::Rc;
+
 pub struct NoiseTexture {
     noise_generator: Perlin,
     scale: f64,
 }
 
 impl NoiseTexture {
-    pub fn new(scale: f64) -> Self {
-        Self {
+    pub fn new(scale: f64) -> Rc<dyn Texture> {
+        Rc::new(Self {
             noise_generator: Perlin::new(),
             scale,
-        }
+        })
     }
 }
 

@@ -9,8 +9,6 @@ use raytracing::terminal::{Terminal, Position};
 use raytracing::texture::NoiseTexture;
 use raytracing::color::Color;
 
-use std::rc::Rc;
-
 fn main() -> Result<(), std::io::Error> {
     diffuse_lights()
 }
@@ -37,11 +35,11 @@ pub fn diffuse_lights() -> Result<(), std::io::Error> {
     welcome_message();
 
     // Textures
-    let noise_texture = Rc::new(NoiseTexture::new(4.));
-    let diff_light = Rc::new(DiffuseLight::from_color(LIGHT_COLOR));
+    let noise_texture = NoiseTexture::new(4.);
+    let diff_light = DiffuseLight::from_color(LIGHT_COLOR);
 
     // Materials
-    let noise_surface = Rc::new(Lambertian::from_texture(noise_texture));
+    let noise_surface = Lambertian::from_texture(noise_texture);
 
     // World
     let mut world = HittableList::new();

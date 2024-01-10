@@ -4,6 +4,7 @@ use crate::interval::Interval;
 
 use std::rc::Rc;
 use std::cell::RefCell;
+use std::ops::AddAssign;
 
 pub struct HittableList {
     objects: Rc<RefCell<Vec<Box<dyn Hittable>>>>,
@@ -21,6 +22,12 @@ impl HittableList {
     pub fn add(&mut self, object: Box<dyn Hittable>) {
         self.bbox = self.bbox.surrounding_box(&object.bounding_box());
         self.objects.borrow_mut().push(object);
+    }
+
+    pub fn extends(&mut self, objects: Vec<Box<dyn Hittable>>) {
+        for object in objects {
+            self.add(object);
+        }
     }
 
     pub fn objects(&self) -> Rc<RefCell<Vec<Box<dyn Hittable>>>> {
@@ -55,5 +62,17 @@ impl Hittable for HittableList {
 
     fn bounding_box(&self) -> AABB {
         self.bbox
+    }
+}
+
+impl AddAssign<Box<dyn Hittable>> for HittableList {
+    fn add_assign(&mut self, object: Box<dyn Hittable>) {
+        self.add(object);
+    }
+}
+
+impl AddAssign<Vec<Box<dyn Hittable>>> for HittableList {
+    fn add_assign(&mut self, objects: Vec<Box<dyn Hittable>>) {
+        self.extends(objects);
     }
 }

@@ -1,5 +1,4 @@
 use raytracing::camera::Camera;
-use raytracing::color::Color;
 use raytracing::material::*;
 use raytracing::writter::{Writter, PpmWritter};
 use raytracing::vector::Point;
@@ -7,8 +6,6 @@ use raytracing::hittable::{HittableList, Sphere};
 use raytracing::image_info::ImageInfo;
 use raytracing::terminal::{Terminal, Position};
 use raytracing::texture::{CheckerTexture, SolidColor};
-
-use std::rc::Rc;
 
 fn main() -> Result<(), std::io::Error> {
     checkers()
@@ -33,14 +30,14 @@ pub fn checkers() -> Result<(), std::io::Error> {
     welcome_message();
 
     // Textures
-    let checker = Rc::new(CheckerTexture::new(
-        Rc::new(SolidColor::new(Color::new(0.2, 0.3, 0.1))),
-        Rc::new(SolidColor::new(Color::new(0.9, 0.9, 0.9))),
+    let checker = CheckerTexture::new(
+        SolidColor::from_rgb(0.2, 0.3, 0.1),
+        SolidColor::from_rgb(0.9, 0.9, 0.9),
         0.8
-    ));
+    );
 
     // Materials
-    let checker_mat = Rc::new(Lambertian::from_texture(checker.clone()));
+    let checker_mat = Lambertian::from_texture(checker.clone());
 
     // World
     let mut world = HittableList::new();

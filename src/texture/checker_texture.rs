@@ -11,12 +11,12 @@ pub struct CheckerTexture {
 }
 
 impl CheckerTexture {
-    pub fn new(odd: Rc<dyn Texture>, even: Rc<dyn Texture>, scale: f64) -> Self {
-        Self {
+    pub fn new(odd: Rc<dyn Texture>, even: Rc<dyn Texture>, scale: f64) -> Rc<dyn Texture> {
+        Rc::new(Self {
             odd,
             even,
             inv_scale: 1. / scale,
-        }
+        })
     }
 }
 

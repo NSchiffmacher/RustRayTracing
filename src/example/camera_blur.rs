@@ -6,8 +6,6 @@ use raytracing::vector::Point;
 use raytracing::hittable::{HittableList, Sphere};
 use raytracing::image_info::ImageInfo;
 
-use std::rc::Rc;
-
 fn main() -> Result<(), std::io::Error> {
     camera_blur()
 }
@@ -29,10 +27,10 @@ pub fn camera_blur() -> Result<(), std::io::Error> {
     const UP: Point = Point::new(0., 1., 0.);
 
     // Materials
-    let material_ground = Rc::new(Lambertian::new(Color::new(0.8, 0.8, 0.0)));
-    let material_center = Rc::new(Lambertian::new(Color::new(0.1, 0.2, 0.5)));
-    let material_left = Rc::new(Dielectric::new(1.5));
-    let material_right = Rc::new(Metal::new(Color::new(0.8, 0.6, 0.2), 0.0));
+    let material_ground = Lambertian::new(Color::new(0.8, 0.8, 0.0));
+    let material_center = Lambertian::new(Color::new(0.1, 0.2, 0.5));
+    let material_left = Dielectric::new(1.5);
+    let material_right = Metal::new(Color::new(0.8, 0.6, 0.2), 0.0);
 
     // Objects
     let mut world = HittableList::new();
