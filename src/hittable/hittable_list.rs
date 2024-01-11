@@ -76,3 +76,11 @@ impl AddAssign<Vec<Box<dyn Hittable>>> for HittableList {
         self.extends(objects);
     }
 }
+
+impl AddAssign<HittableList> for HittableList {
+    fn add_assign(&mut self, other: HittableList) {
+        for object in other.objects().take() {
+            self.add(object);
+        }
+    }
+}

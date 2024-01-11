@@ -1,24 +1,24 @@
 use crate::vector::{Point, Vec3};
-use crate::hittable::{Hittable, Quad};
+use crate::hittable::{Hittable, Quad, HittableList};
 use crate::material::Material;
 
 use std::rc::Rc;
 
-type Cuboid = Vec<Box<dyn Hittable>>;
+type Cuboid = HittableList;
 
 pub fn cuboid(center_pos: Point, u: Vec3, v: Vec3, w: Vec3, material: Rc<dyn Material>) -> Cuboid {
-    let mut objects: Vec<Box<dyn Hittable>> = Vec::new();
+    let mut objects = Cuboid::new();
 
     let hu = u / 2.;
     let hv = v / 2.;
     let hw = w / 2.;
 
-    objects.push(Quad::new(center_pos - hu - hv - hw, u, w, material.clone())); // front
-    objects.push(Quad::new(center_pos - hu + hv - hw, u, w, material.clone())); // back
-    objects.push(Quad::new(center_pos - hu - hv - hw, w, v, material.clone())); // left
-    objects.push(Quad::new(center_pos + hu - hv - hw, w, v, material.clone())); // right
-    objects.push(Quad::new(center_pos - hu - hv + hw, u, v, material.clone())); // top
-    objects.push(Quad::new(center_pos - hu - hv - hw, u, v, material.clone())); // bottom
+    objects += Quad::new(center_pos - hu - hv - hw, u, w, material.clone()); // front
+    objects += Quad::new(center_pos - hu + hv - hw, u, w, material.clone()); // back
+    objects += Quad::new(center_pos - hu - hv - hw, w, v, material.clone()); // left
+    objects += Quad::new(center_pos + hu - hv - hw, w, v, material.clone()); // right
+    objects += Quad::new(center_pos - hu - hv + hw, u, v, material.clone()); // top
+    objects += Quad::new(center_pos - hu - hv - hw, u, v, material.clone()); // bottom
 
     objects
 }

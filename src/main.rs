@@ -3,22 +3,24 @@ use raytracing::camera::Camera;
 use raytracing::material::*;
 use raytracing::writter::{Writter, PpmWritter};
 use raytracing::vector::{Point, Vec3};
-use raytracing::hittable::{HittableList, Quad, yaw_rotated_cuboid};
+use raytracing::hittable::{HittableList, ConstantMedium, Quad, yaw_rotated_cuboid};
 use raytracing::image_info::ImageInfo;
 use raytracing::terminal::{Terminal, Position};
 use raytracing::color::Color;
 
+use std::rc::Rc;
+
 fn main() -> Result<(), std::io::Error> {
-    cornell_box()
+    cornell_smoke()
 }
 
-pub fn cornell_box() -> Result<(), std::io::Error> {
+pub fn cornell_smoke() -> Result<(), std::io::Error> {
     // Constants
-    const FILEPATH: &str = "output/cornell_box.ppm";
+    const FILEPATH: &str = "output/test.ppm";
     const WIDTH: usize = 600;
     const ASPECT_RATIO: f64 = 1.;
 
-    const SAMPLES_PER_PIXEL: usize = 100;
+    const SAMPLES_PER_PIXEL: usize = 2000;
     const MAX_DEPTH: usize = 50;
 
     const BACKGROUND_COLOR: Color = Color { r: 0., g: 0., b: 0. };
@@ -47,10 +49,17 @@ pub fn cornell_box() -> Result<(), std::io::Error> {
     world += Quad::new(Point::new(343., 554., 332.), Vec3::new(-130.,0.,0.), Vec3::new(0.,0.,-105.), light);
     world += Quad::new(Point::new(0.,0.,0.), Vec3::new(555.,0.,0.), Vec3::new(0.,0.,555.), white.clone());
     world += Quad::new(Point::new(555., 555., 555.), Vec3::new(-555., 0., 0.), Vec3::new(0., 0., -555.), white.clone());
-    world += Quad::new(Point::new(0., 0., 555.), Vec3::new(555., 0., 0.), Vec3::new(0., 555., 0.), white.clone());
+    // world += Quad::new(Point::new(0., 0., 555.), Vec3::new(555., 0., 0.), Vec3::new(0., 555., 0.), white.clone());
     
-    world += yaw_rotated_cuboid(Point::new(212.5, 82.5, 147.5), Vec3::new(165., 165., 165.), -18., white.clone());
-    world += yaw_rotated_cuboid(Point::new(347.5, 165.0, 377.5), Vec3::new(165., 330., 165.), 15., white.clone());
+
+    world += ConstantMedium::from_color(
+        Rc::new(yaw_rotated_cuboid(Point::new(212.5, 82.5, 147.5), Vec3::new(165., 165., 165.), -18., white.clone())), 
+        0.01,
+        Color::black());
+    world += ConstantMedium::from_color(
+        Rc::new(yaw_rotated_cuboid(Point::new(347.5, 165.0, 377.5), Vec3::new(165., 330., 165.), 15., white.clone())), 
+        0.01,
+        Color::white());
     let world = world.to_bvh();
 
     // Image settings
@@ -65,7 +74,7 @@ pub fn cornell_box() -> Result<(), std::io::Error> {
     // Camera 
     let mut camera = Camera::new(VERTICAL_FOV, image_info.clone());
     camera.set(LOOK_FROM, LOOK_AT, focus_distance, DEFOCUS_ANGLE, UP);
-    camera.set_background(BACKGROUND_COLOR);
+    // camera.set_background(BACKGROUND_COLOR);
 
     // Output settings
     let mut writter: Box<dyn Writter> = Box::new(PpmWritter::new(image_info.clone()));

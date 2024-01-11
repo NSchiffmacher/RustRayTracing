@@ -21,6 +21,10 @@ impl Interval {
         Self::new(0.00001, f64::INFINITY)
     }
 
+    pub fn universe() -> Self {
+        Self::new(-f64::INFINITY, f64::INFINITY)
+    }
+
     pub fn contains(&self, value: f64) -> bool {
         self.min <= value && value <= self.max
     }
