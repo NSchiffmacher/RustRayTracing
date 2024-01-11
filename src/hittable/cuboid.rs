@@ -1,5 +1,5 @@
 use crate::vector::{Point, Vec3};
-use crate::hittable::{Hittable, Quad, HittableList};
+use crate::hittable::{Quad, HittableList};
 use crate::material::Material;
 
 use std::rc::Rc;

@@ -16,7 +16,7 @@ fn main() -> Result<(), std::io::Error> {
 
 pub fn cornell_smoke() -> Result<(), std::io::Error> {
     // Constants
-    const FILEPATH: &str = "output/test.ppm";
+    const FILEPATH: &str = "output/cornell_smoke.ppm";
     const WIDTH: usize = 600;
     const ASPECT_RATIO: f64 = 1.;
 
