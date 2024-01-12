@@ -8,8 +8,6 @@ use raytracing::image_info::ImageInfo;
 use raytracing::terminal::{Terminal, Position};
 use raytracing::color::Color;
 
-use std::rc::Rc;
-
 fn main() -> Result<(), std::io::Error> {
     cornell_smoke()
 }
@@ -51,11 +49,11 @@ pub fn cornell_smoke() -> Result<(), std::io::Error> {
     
 
     world += ConstantMedium::from_color(
-        Rc::new(yaw_rotated_cuboid(Point::new(212.5, 82.5, 147.5), Vec3::new(165., 165., 165.), -18., white.clone())), 
+        Box::new(yaw_rotated_cuboid(Point::new(212.5, 82.5, 147.5), Vec3::new(165., 165., 165.), -18., white.clone())), 
         0.01,
         Color::black());
     world += ConstantMedium::from_color(
-        Rc::new(yaw_rotated_cuboid(Point::new(347.5, 165.0, 377.5), Vec3::new(165., 330., 165.), 15., white.clone())), 
+        Box::new(yaw_rotated_cuboid(Point::new(347.5, 165.0, 377.5), Vec3::new(165., 330., 165.), 15., white.clone())), 
         0.01,
         Color::white());
     let world = world.to_bvh();

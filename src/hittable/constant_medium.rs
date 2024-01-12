@@ -9,14 +9,15 @@ use crate::texture::{Uv, Texture, SolidColor};
 use std::rc::Rc;
 use rand::Rng;
 
+#[derive(Clone)]
 pub struct ConstantMedium {
-    boundary: Rc<dyn Hittable>,
+    boundary: Box<dyn Hittable>,
     inv_neg_density: f64,
     phase_function: Rc<dyn Material>,
 }
 
 impl ConstantMedium {
-    pub fn new(boundary: Rc<dyn Hittable>, density: f64, a: Rc<dyn Texture>) -> Box<dyn Hittable> {
+    pub fn new(boundary: Box<dyn Hittable>, density: f64, a: Rc<dyn Texture>) -> Box<dyn Hittable> {
         Box::new(Self {
             boundary,
             inv_neg_density: -1.0 / density,
@@ -24,7 +25,7 @@ impl ConstantMedium {
         })
     }
 
-    pub fn from_color(boundary: Rc<dyn Hittable>, density: f64, color: Color) -> Box<dyn Hittable> {
+    pub fn from_color(boundary: Box<dyn Hittable>, density: f64, color: Color) -> Box<dyn Hittable> {
         Self::new(boundary, density, SolidColor::new(color))
     }
 }
@@ -74,5 +75,9 @@ impl Hittable for ConstantMedium {
             ray,
             self.phase_function.clone(),
         ))
+    }
+
+    fn box_clone(&self) -> Box<dyn Hittable> {
+        Box::new(self.clone())
     }
 }

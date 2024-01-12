@@ -7,6 +7,7 @@ use crate::texture::Uv;
 
 use std::rc::Rc;
 
+#[derive(Clone)]
 pub struct Sphere {
     initial_center: Point,
     center_vec: Vec3,
@@ -103,5 +104,9 @@ impl Hittable for Sphere {
 
     fn bounding_box(&self) -> AABB {
         self.bbox
+    }
+
+    fn box_clone(&self) -> Box<dyn Hittable> {
+        Box::new(self.clone())
     }
 }

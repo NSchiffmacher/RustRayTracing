@@ -18,6 +18,12 @@ impl Lambertian {
         })
     }
 
+    pub fn from_rgb(r: f64, g: f64, b: f64) -> Rc<dyn Material> {
+        Rc::new(Self {
+            albedo: SolidColor::from_rgb(r, g, b),
+        })
+    }
+
     pub fn from_texture(albedo: Rc<dyn Texture>) -> Rc<dyn Material> {
         Rc::new(Self {
             albedo,

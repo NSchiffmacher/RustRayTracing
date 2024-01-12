@@ -7,11 +7,13 @@ use rand::Rng;
 use std::rc::Rc;
 use std::cell::RefCell;
 
+#[derive(Clone)]
 pub enum BvhNode {
     Leaf(usize),
     Node(Box<BvhTree>, Box<BvhTree>),
 }
 
+#[derive(Clone)]
 pub struct BvhTree {
     value: BvhNode,
     bbox: AABB,
@@ -87,5 +89,9 @@ impl Hittable for BvhTree {
 
     fn bounding_box(&self) -> AABB {
         self.bbox
+    }
+
+    fn box_clone(&self) -> Box<dyn Hittable> {
+        Box::new(self.clone())
     }
 }

@@ -7,6 +7,7 @@ use crate::texture::Uv;
 
 use std::rc::Rc;
 
+#[derive(Clone)]
 pub struct Quad {
     q: Point,
     u: Vec3,
@@ -62,5 +63,9 @@ impl Hittable for Quad {
         let uv = Uv{ u: alpha, v: beta };  
 
         Some(HitRecord::new(hit_point, self.normal, t, uv, ray, self.material.clone()))
+    }
+
+    fn box_clone(&self) -> Box<dyn Hittable> {
+        Box::new(self.clone())
     }
 } 

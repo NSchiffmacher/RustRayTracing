@@ -22,4 +22,12 @@ pub use hit_record::HitRecord;
 pub trait Hittable {
     fn hit(&self, ray: &Ray, ray_t: &Interval) -> Option<HitRecord>;
     fn bounding_box(&self) -> AABB;
+
+    fn box_clone(&self) -> Box<dyn Hittable>;
+}
+
+impl Clone for Box<dyn Hittable> {
+    fn clone(&self) -> Self {
+        self.box_clone()
+    }
 }

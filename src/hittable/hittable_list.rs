@@ -6,6 +6,7 @@ use std::rc::Rc;
 use std::cell::RefCell;
 use std::ops::AddAssign;
 
+#[derive(Clone)]
 pub struct HittableList {
     objects: Rc<RefCell<Vec<Box<dyn Hittable>>>>,
     bbox: AABB,
@@ -62,6 +63,10 @@ impl Hittable for HittableList {
 
     fn bounding_box(&self) -> AABB {
         self.bbox
+    }
+
+    fn box_clone(&self) -> Box<dyn Hittable> {
+        Box::new(self.clone())
     }
 }
 
