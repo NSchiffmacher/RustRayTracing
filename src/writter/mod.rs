@@ -1,5 +1,8 @@
-pub mod ppm_writter;
+mod ppm_writter;
+mod general_writter;
+
 pub use ppm_writter::PpmWritter;
+pub use general_writter::GeneralWritter;
 
 use crate::color::Color;
 use crate::image_info::ImageInfo;

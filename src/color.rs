@@ -28,6 +28,11 @@ impl Color {
     }
 
     pub fn to_ppm_string(&self) -> String {
+        let (ir, ig, ib) = self.to_integer_rgb();
+        format!("{} {} {}", ir, ig, ib)
+    }
+
+    pub fn to_integer_rgb(&self) -> (u8, u8, u8) {
         let r = COLOR_RANGE.clamp(self.r);
         let g = COLOR_RANGE.clamp(self.g);
         let b = COLOR_RANGE.clamp(self.b);
@@ -36,7 +41,7 @@ impl Color {
         let ig = (g * 255.).floor() as u8;
         let ib = (b * 255.).floor() as u8;
 
-        format!("{} {} {}", ir, ig, ib)
+        (ir, ig, ib)
     }
 
     pub fn lerp(&self, rhs: &Self, t: f64) -> Self {
