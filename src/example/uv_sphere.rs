@@ -1,5 +1,5 @@
 use raytracing::color::Color;
-use raytracing::writter::{Writter, PpmWritter};
+use raytracing::writter::{Writter, GeneralWritter};
 use raytracing::ray::Ray;
 use raytracing::vector::{Point, Vec3};
 use raytracing::hittable::{HittableList, Hittable, Sphere};
@@ -33,8 +33,8 @@ pub fn uv_sphere() -> Result<(), std::io::Error> {
     let height = ((width as f64) / aspect_ratio) as usize;
 
     // Output settings
-    let image_info = ImageInfo::new(width, height, "output/uv_sphere.ppm".to_string(), 1, 1);
-    let mut writter: Box<dyn Writter> = Box::new(PpmWritter::new(image_info.clone()));
+    let image_info = ImageInfo::new(width, height, "output/uv_sphere.png".to_string(), 1, 1);
+    let mut writter: Box<dyn Writter> = Box::new(GeneralWritter::new(image_info.clone()));
     writter.try_open()?;
 
     // Camera settings

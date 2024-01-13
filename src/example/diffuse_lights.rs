@@ -1,7 +1,7 @@
 
 use raytracing::camera::Camera;
 use raytracing::material::*;
-use raytracing::writter::{Writter, PpmWritter};
+use raytracing::writter::{Writter, GeneralWritter};
 use raytracing::vector::{Point, Vec3};
 use raytracing::hittable::{HittableList, Sphere, Quad};
 use raytracing::image_info::ImageInfo;
@@ -15,7 +15,7 @@ fn main() -> Result<(), std::io::Error> {
 
 pub fn diffuse_lights() -> Result<(), std::io::Error> {
     // Constants
-    const FILEPATH: &str = "output/diffuse_lights.ppm";
+    const FILEPATH: &str = "output/diffuse_lights.png";
     const WIDTH: usize = 400;
     const ASPECT_RATIO: f64 = 16.0 / 9.0;
 
@@ -65,7 +65,7 @@ pub fn diffuse_lights() -> Result<(), std::io::Error> {
     camera.set_background(BACKGROUND_COLOR);
 
     // Output settings
-    let mut writter: Box<dyn Writter> = Box::new(PpmWritter::new(image_info.clone()));
+    let mut writter: Box<dyn Writter> = Box::new(GeneralWritter::new(image_info.clone()));
     writter.try_open()?;
 
     Terminal::cursor_position(&Position{ x: 2, y: 5});

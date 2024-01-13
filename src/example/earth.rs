@@ -1,6 +1,6 @@
 use raytracing::camera::Camera;
 use raytracing::material::*;
-use raytracing::writter::{Writter, PpmWritter};
+use raytracing::writter::{Writter, GeneralWritter};
 use raytracing::vector::Point;
 use raytracing::hittable::{HittableList, Sphere};
 use raytracing::image_info::ImageInfo;
@@ -13,7 +13,7 @@ fn main() -> Result<(), std::io::Error> {
 
 pub fn earth() -> Result<(), std::io::Error> {
     // Constants
-    const FILEPATH: &str = "output/earth.ppm";
+    const FILEPATH: &str = "output/earth.png";
     const WIDTH: usize = 800;
     const ASPECT_RATIO: f64 = 16.0 / 9.0;
 
@@ -54,7 +54,7 @@ pub fn earth() -> Result<(), std::io::Error> {
     camera.set(LOOK_FROM, LOOK_AT, focus_distance, DEFOCUS_ANGLE, UP);
 
     // Output settings
-    let mut writter: Box<dyn Writter> = Box::new(PpmWritter::new(image_info.clone()));
+    let mut writter: Box<dyn Writter> = Box::new(GeneralWritter::new(image_info.clone()));
     writter.try_open()?;
 
     Terminal::cursor_position(&Position{ x: 2, y: 5});

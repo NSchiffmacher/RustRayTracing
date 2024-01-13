@@ -51,6 +51,10 @@ path = "src/example/quads.rs"
 name = "uv_sphere"
 path = "src/example/uv_sphere.rs"
 
+[[example]]
+name = "final_scene"
+path = "src/example/final_scene.rs"
+
 [dependencies]
 image = "0.24.7"
 indicatif = "0.17.7"

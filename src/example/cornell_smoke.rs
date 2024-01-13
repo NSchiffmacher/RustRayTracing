@@ -1,7 +1,7 @@
 
 use raytracing::camera::Camera;
 use raytracing::material::*;
-use raytracing::writter::{Writter, PpmWritter};
+use raytracing::writter::{Writter, GeneralWritter};
 use raytracing::vector::{Point, Vec3};
 use raytracing::hittable::{HittableList, ConstantMedium, Quad, yaw_rotated_cuboid};
 use raytracing::image_info::ImageInfo;
@@ -14,7 +14,7 @@ fn main() -> Result<(), std::io::Error> {
 
 pub fn cornell_smoke() -> Result<(), std::io::Error> {
     // Constants
-    const FILEPATH: &str = "output/cornell_smoke.ppm";
+    const FILEPATH: &str = "output/cornell_smoke.png";
     const WIDTH: usize = 600;
     const ASPECT_RATIO: f64 = 1.;
 
@@ -73,7 +73,7 @@ pub fn cornell_smoke() -> Result<(), std::io::Error> {
     // camera.set_background(BACKGROUND_COLOR);
 
     // Output settings
-    let mut writter: Box<dyn Writter> = Box::new(PpmWritter::new(image_info.clone()));
+    let mut writter: Box<dyn Writter> = Box::new(GeneralWritter::new(image_info.clone()));
     writter.try_open()?;
 
     Terminal::cursor_position(&Position{ x: 2, y: 5});

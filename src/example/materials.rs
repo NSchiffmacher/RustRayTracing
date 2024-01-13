@@ -1,7 +1,7 @@
 use raytracing::camera::Camera;
 use raytracing::color::Color;
 use raytracing::material::*;
-use raytracing::writter::{Writter, PpmWritter};
+use raytracing::writter::{Writter, GeneralWritter};
 use raytracing::vector::Point;
 use raytracing::hittable::{HittableList, Sphere};
 use raytracing::image_info::ImageInfo;
@@ -12,7 +12,7 @@ fn main() -> Result<(), std::io::Error> {
 
 pub fn materials() -> Result<(), std::io::Error> {
     // Constants
-    const FILEPATH: &str = "output/materials.ppm";
+    const FILEPATH: &str = "output/materials.png";
     const WIDTH: usize = 800;
     const ASPECT_RATIO: f64 = 16.0 / 9.0;
 
@@ -30,7 +30,7 @@ pub fn materials() -> Result<(), std::io::Error> {
     let image_info = ImageInfo::from_aspect_ratio(ASPECT_RATIO, WIDTH, FILEPATH.to_string(), SAMPLES_PER_PIXEL, MAX_DEPTH);
 
     // Output settings
-    let mut writter: Box<dyn Writter> = Box::new(PpmWritter::new(image_info.clone()));
+    let mut writter: Box<dyn Writter> = Box::new(GeneralWritter::new(image_info.clone()));
     writter.try_open()?;
 
     // Materials
