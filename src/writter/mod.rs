@@ -10,8 +10,6 @@ use crate::image_info::ImageInfo;
 use std::fs::File;
 
 pub trait Writter {
-    fn new(image_info: ImageInfo) -> Self where Self: Sized;
-
     fn image_info(&self) -> &ImageInfo;
 
     fn set_at(&mut self, position: (usize, usize), color: Color);

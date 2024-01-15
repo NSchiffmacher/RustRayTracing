@@ -11,14 +11,16 @@ pub struct GeneralWritter {
     image_info: ImageInfo,
 }
 
-impl Writter for GeneralWritter {
-    fn new(image_info: ImageInfo) -> Self where Self: Sized {
+impl GeneralWritter {
+    pub fn new(image_info: ImageInfo) -> Self where Self: Sized {
         Self {
             image: RgbImage::new(image_info.width as u32, image_info.height as u32),
             image_info,
         }
     }
+}
 
+impl Writter for GeneralWritter {
     fn image_info(&self) -> &ImageInfo {
         &self.image_info
     }

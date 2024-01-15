@@ -11,14 +11,16 @@ pub struct PpmWritter {
     data: Vec<Vec<Color>>,
 }
 
-impl Writter for PpmWritter {
-    fn new(image_info: ImageInfo) -> Self where Self: Sized {
+impl PpmWritter {
+    pub fn new(image_info: ImageInfo) -> Self where Self: Sized {
         Self {
             image_info: image_info.clone(),
             data: vec![vec![Color::black(); image_info.width]; image_info.height],
         }
     }
-    
+}
+
+impl Writter for PpmWritter {    
     fn image_info(&self) -> &ImageInfo {
         &self.image_info
     }
