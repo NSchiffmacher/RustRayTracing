@@ -8,7 +8,7 @@ use crate::image_info::ImageInfo;
 
 use rand::Rng;
 use std::io::Write;
-use indicatif::{ProgressStyle, ProgressIterator};
+use indicatif::{ProgressStyle, ProgressBar};
 
 pub struct Camera {
     focus_distance: f64,
@@ -35,6 +35,8 @@ pub struct Camera {
 
     viewport_upper_left: Vec3,
     pixel00_loc: Vec3,
+
+    pub print_progress: bool,
 }
 
 impl Camera {
@@ -61,6 +63,8 @@ impl Camera {
 
             viewport_upper_left: Vec3::zero(), // Set in the call to set()
             pixel00_loc: Vec3::zero(),
+
+            print_progress: true,
         };
         camera.set(Point::new(0., 0., -1.), Point::new(0., 0., 0.), 1., 0., Vec3::new(0., 1., 0.));
         camera
@@ -101,12 +105,17 @@ impl Camera {
     }
 
     pub fn render(&mut self, world: &HittableList, writter: &mut dyn Writter) {
-        let progress_style = ProgressStyle::with_template("{spinner:.green} [{elapsed_precise}] [{wide_bar:.green/blue}] {percent}% ({eta_precise})")
-            .unwrap()
-            .progress_chars("=>-");
-    
+        let progress_bar = if self.print_progress {
+            let progress_style = ProgressStyle::with_template("{spinner:.green} [{elapsed_precise}] [{wide_bar:.green/blue}] {percent}% ({eta_precise})")
+                .unwrap()
+                .progress_chars("=>-");
+            Some(ProgressBar::new(self.image_info.height as u64).with_style(progress_style))
+        } else {
+            None
+        };
+
         let rendering_start = std::time::Instant::now();
-        for y in (0..self.image_info.height).progress_with_style(progress_style) {
+        for y in 0..self.image_info.height {
             for x in 0..self.image_info.width {
                 let mut color = Color::black();
                 
@@ -121,10 +130,15 @@ impl Camera {
                 
                 writter.set_at((x, y), color);
             }
+            if let Some(progress) = &progress_bar {
+                progress.inc(1);
+            }
         }
-        
-        println!("Done rendering in {:.2}s.\r", rendering_start.elapsed().as_secs_f64());
-        std::io::stdout().flush().unwrap();
+        if let Some(progress) = &progress_bar {
+            progress.finish();
+            println!("Done rendering in {:.2}s.\r", rendering_start.elapsed().as_secs_f64());
+            std::io::stdout().flush().unwrap();
+        }
     }
 
     fn get_ray(&mut self, x: usize, y: usize) -> Ray {
