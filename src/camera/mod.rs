@@ -6,7 +6,7 @@ use crate::vector::{Vec3, Point};
 use crate::writter::Writter;
 use crate::image_info::ImageInfo;
 
-use rand::Rng;
+use rand::{Rng, seq::SliceRandom};
 use std::io::Write;
 use indicatif::{ProgressStyle, ProgressBar};
 
@@ -37,6 +37,7 @@ pub struct Camera {
     pixel00_loc: Vec3,
 
     pub print_progress: bool,
+    pub shuffle_rendering: bool,
 }
 
 impl Camera {
@@ -65,6 +66,7 @@ impl Camera {
             pixel00_loc: Vec3::zero(),
 
             print_progress: true,
+            shuffle_rendering: false,
         };
         camera.set(Point::new(0., 0., -1.), Point::new(0., 0., 0.), 1., 0., Vec3::new(0., 1., 0.));
         camera
@@ -114,13 +116,24 @@ impl Camera {
             None
         };
 
+        let mut xs: Vec<_> = (0..self.image_info.width).collect();
+        let mut ys: Vec<_> = (0..self.image_info.height).collect();
+        let mut rng = rand::thread_rng();
+        
+        if self.shuffle_rendering {
+            ys.shuffle(&mut rng);
+        }
+
         let rendering_start = std::time::Instant::now();
-        for y in 0..self.image_info.height {
-            for x in 0..self.image_info.width {
+        for y in &ys {
+            if self.shuffle_rendering {
+                xs.shuffle(&mut rng)
+            }
+            for x in &xs {
                 let mut color = Color::black();
                 
                 for _sample in 0..self.image_info.samples_per_pixel {
-                    let ray = self.get_ray(x, y);
+                    let ray = self.get_ray(*x, *y);
                     color += self.ray_color(&ray, &world, self.image_info.max_depth)
                 }
                 
@@ -128,7 +141,7 @@ impl Camera {
                 color *= 1. / (self.image_info.samples_per_pixel as f64);
                 color = Color::new(color.r.sqrt(), color.g.sqrt(), color.b.sqrt());
                 
-                writter.set_at((x, y), color);
+                writter.set_at((*x, *y), color);
             }
             if let Some(progress) = &progress_bar {
                 progress.inc(1);
