@@ -9,6 +9,7 @@ use crate::image_info::ImageInfo;
 use rand::{Rng, seq::SliceRandom};
 use std::io::Write;
 use indicatif::{ProgressStyle, ProgressBar};
+use itertools::Itertools;
 
 pub struct Camera {
     focus_distance: f64,
@@ -111,42 +112,37 @@ impl Camera {
             let progress_style = ProgressStyle::with_template("{spinner:.green} [{elapsed_precise}] [{wide_bar:.green/blue}] {percent}% ({eta_precise})")
                 .unwrap()
                 .progress_chars("=>-");
-            Some(ProgressBar::new(self.image_info.height as u64).with_style(progress_style))
+            Some(ProgressBar::new((self.image_info.width * self.image_info.height) as u64).with_style(progress_style))
         } else {
             None
         };
-
-        let mut xs: Vec<_> = (0..self.image_info.width).collect();
-        let mut ys: Vec<_> = (0..self.image_info.height).collect();
+        let mut xs_ys = (0..self.image_info.width).cartesian_product(0..self.image_info.height).collect_vec();
         let mut rng = rand::thread_rng();
-        
+
+        // use of xs_ys just so that we can completely shuffle the rendering, which is usefull for the "live" rendering project
         if self.shuffle_rendering {
-            ys.shuffle(&mut rng);
+            xs_ys.shuffle(&mut rng);
         }
 
         let rendering_start = std::time::Instant::now();
-        for y in &ys {
-            if self.shuffle_rendering {
-                xs.shuffle(&mut rng)
+        for (x, y) in xs_ys {
+            let mut color = Color::black();
+            
+            for _sample in 0..self.image_info.samples_per_pixel {
+                let ray = self.get_ray(x, y);
+                color += self.ray_color(&ray, &world, self.image_info.max_depth)
             }
-            for x in &xs {
-                let mut color = Color::black();
-                
-                for _sample in 0..self.image_info.samples_per_pixel {
-                    let ray = self.get_ray(*x, *y);
-                    color += self.ray_color(&ray, &world, self.image_info.max_depth)
-                }
-                
-                // Apply gamma correction
-                color *= 1. / (self.image_info.samples_per_pixel as f64);
-                color = Color::new(color.r.sqrt(), color.g.sqrt(), color.b.sqrt());
-                
-                writter.set_at((*x, *y), color);
-            }
+            
+            // Apply gamma correction
+            color *= 1. / (self.image_info.samples_per_pixel as f64);
+            color = Color::new(color.r.sqrt(), color.g.sqrt(), color.b.sqrt());
+            
+            writter.set_at((x, y), color);
             if let Some(progress) = &progress_bar {
                 progress.inc(1);
             }
         }
+
         if let Some(progress) = &progress_bar {
             progress.finish();
             println!("Done rendering in {:.2}s.\r", rendering_start.elapsed().as_secs_f64());
